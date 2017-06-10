@@ -1,0 +1,26 @@
+{
+  "variables": {
+    "isPredictiveScreening":false,
+    "screenerSubtype":["CLASSIC", "RSI"],
+    "triggerTypes": [
+      "SLOW_MA",
+      "FAST_MA",
+      "SLOW_AND_FAST_MA"
+    ],
+    "directions": [
+      "ABOVE",
+      "BELOW",
+      "BETWEEN"
+    ],
+    "triggerWithinDays": [10],
+
+    "descriptions": ["Stochastic Oscillator", "Stochastic Relative Strength Index"]
+  },
+
+  "varToDescMap":{
+    "FAST_SLOW_MA_CROSS": "Fast moving average crosses slow moving average.",
+    "ABOVE": "Above",
+    "BELOW": "Below",
+    "BETWEEN": "Between"
+  }
+}

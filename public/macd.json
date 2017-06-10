@@ -1,0 +1,21 @@
+{
+  "variables": {
+    "triggerTypes": [
+      "FAST_SLOW_MA_CROSS"
+    ],
+    "directions": [
+      "ABOVE",
+      "BELOW",
+      "BETWEEN"
+    ],
+    "triggerwithindays": 10,
+    "description": "MACD"
+  },
+
+  "varToDescMap":{
+    "FAST_SLOW_MA_CROSS": "Fast moving average crosses slow moving average.",
+    "ABOVE": "Above",
+    "BELOW": "Below",
+    "BETWEEN": "Between"
+  }
+}
