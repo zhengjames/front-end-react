@@ -7,13 +7,14 @@ import Select from '../components/Select';
 class ScreenerFormContainer extends Component {
     constructor(props) {
         super(props);
-        this.handleIsOnClick = this.handleIsOnClick.bind(this);
+        this.handleIsEnabledToggle = this.handleIsEnabledToggle.bind(this);
     }
 
     //calls parent class function
-    handleIsOnClick(e) {
-        this.props.handleIsOnToggle(!this.props.isOn);
-        console.log("Screener isOn is ", this.props.isOn)
+    handleIsEnabledToggle(e) {
+        //on change flips boolean
+        this.props.handleIsEnabledToggle(!this.props.isEnabled);
+        console.log("Screener isEnabled is ", this.props.isEnabled)
     }
 }
 

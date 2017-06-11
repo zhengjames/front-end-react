@@ -15,18 +15,20 @@ class App extends Component {
 
     constructor(props) {
         super(props)
-        //used to control cross component communications
-        // if (this.state.stochasticEnabled) {
-        //     this.state.stochasticTabClassNames = ["react-tabs__tab", "screener-tab_is_on"];
-        // }
+
         this.notEnabledLabelClasses = ["react-tabs__tab"];
-        this.enabledLabelClasses = ["react-tabs__tab", "screener-tab_is_on"];
-        this.handleMacdIsOnToggle = this.handleMacdIsOnToggle.bind(this);
+        this.enhancedLabelClasses = ["react-tabs__tab", "screener-tab_is_disabled"];
         this.state = {
+            //by default enable the two
             macdEnabled : true,
             stochasticEnabled : true,
-            macdTabClassNames: this.enabledLabelClasses,
+            //by default use the css that indicates enabled
+            macdTabClassNames: this.notEnabledLabelClasses,
+            stochasticTabClassNames: this.notEnabledLabelClasses
         }
+
+        this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
+        this.handleStochasticStatusOnToggle = this.handleStochasticStatusOnToggle.bind(this);
     }
 
     render() {
@@ -40,19 +42,21 @@ class App extends Component {
                 <Tabs>
                     <TabList>
                         <Tab className={this.state.macdTabClassNames}>MACD</Tab>
-                        <Tab>Stochastic RSI</Tab>
+                        <Tab className={this.state.stochasticTabClassNames}>Stochastic RSI</Tab>
                     </TabList>
                     <TabPanel>
-                    <div id="macd_tab_content">
-                        <MacdFormContainer
-                            isOn={this.state.macdEnabled}
-                            handleIsOnToggle={this.handleMacdIsOnToggle}
-                        />
-                    </div>
+                        <div id="macd_tab_content">
+                            <MacdFormContainer
+                                isEnabled={this.state.macdEnabled}
+                                handleIsEnabledToggle={this.handleMacdStatusOnToggle}
+                            />
+                        </div>
                     </TabPanel>
                     <TabPanel>
                         <div id="stochastic_tab_content">
-                            <StochasticFormContainer/>
+                            <StochasticFormContainer
+                                isEnabled={this.state.stochasticEnabled}
+                                handleIsEnabledToggle={this.handleStochasticStatusOnToggle}/>
                         </div>
                     </TabPanel>
                 </Tabs>
@@ -60,12 +64,22 @@ class App extends Component {
         );
     }
 
-    handleMacdIsOnToggle(isOn) {
-        this.state.macdEnabled = isOn;
-        if (isOn) {
-            this.setState({macdTabClassNames:this.enabledLabelClasses});
-        } else {
+    handleMacdStatusOnToggle(isEnabled) {
+        this.state.macdEnabled = isEnabled;
+        //enhance only
+        if (isEnabled) {
             this.setState({macdTabClassNames:this.notEnabledLabelClasses});
+        } else {
+            this.setState({macdTabClassNames:this.enhancedLabelClasses});
+        }
+    }
+
+    handleStochasticStatusOnToggle(isEnabled) {
+        this.state.stochasticEnabled = isEnabled;
+        if (isEnabled) {
+            this.setState({stochasticTabClassNames:this.notEnabledLabelClasses});
+        } else {
+            this.setState({stochasticTabClassNames:this.enhancedLabelClasses});
         }
     }
 }
