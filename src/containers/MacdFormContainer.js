@@ -4,9 +4,12 @@ import SingleInput from '../components/SingleInput';
 import TextArea from '../components/TextArea';
 import Select from '../components/Select';
 import request from 'superagent'
-class MacdFormContainer extends Component {
+import Toggle from 'react-toggle'
+import FormContainer from './FormContainer';
+class MacdFormContainer extends FormContainer {
 	constructor(props) {
 		super(props);
+		this.isOn=true;
 		this.varToDescMap = {};
 		this.state = {
 			triggerTypes: [],
@@ -59,7 +62,6 @@ class MacdFormContainer extends Component {
         this.setState({tickersArr: textArray}, () => console.log('tickers array', this.state.tickersArr));
 	}
 
-
 	handleClearForm(e) {
 		e.preventDefault();
 		this.setState({
@@ -102,6 +104,17 @@ class MacdFormContainer extends Component {
 		return (
 			<form className="container" onSubmit={this.handleFormSubmit}>
 				<h5>MACD prediction screener</h5>
+				<div class="toggle-container">
+					<div class="toggle-desc">Screener is </div>
+					<Toggle
+						defaultChecked={this.isOn}
+						onChange={this.handleIsOnClick}
+						icons={{
+                            checked: <div class="toggle-en-dis">Dis</div>,
+							unchecked: <div class="toggle-en-dis">En</div>,
+                        }}/>
+					<div class="toggle-desc">abled</div>
+				</div>
 				<label>Type of trigger</label>
 				<Select
 					name={'trigger type'}

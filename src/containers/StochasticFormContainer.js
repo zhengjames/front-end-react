@@ -3,11 +3,14 @@ import CheckboxOrRadioGroup from '../components/CheckboxOrRadioGroup';
 import SingleInput from '../components/SingleInput';
 import TextArea from '../components/TextArea';
 import Select from '../components/Select';
+import '../react-toggle.css'
 import request from 'superagent'
+import Toggle from 'react-toggle'
 class StochasticFormContainer extends Component {
 	constructor(props) {
 		super(props);
 		this.varToDescMap = {};
+		this.isOn = true;
 		this.state = {
 			isPredictiveScreening: null,
 			screenerSubtype: [],
@@ -55,6 +58,10 @@ class StochasticFormContainer extends Component {
                 console.log(this.state.triggerTypes[0]);
 
             });
+	}
+
+	handleIsOnClick(e) {
+		this.isOn = !this.isOn;
 	}
 
     handleTriggerPredictiveScreeningSelect(e) {
@@ -117,7 +124,12 @@ class StochasticFormContainer extends Component {
 		return (
 			<form className="container" onSubmit={this.handleFormSubmit}>
 				<h5>MACD prediction screener</h5>
-
+				<div>
+				<Toggle
+					defaultChecked={this.state.isOn}
+					onChange={this.handleIsOnClick} />
+					<div style="display:inline-block">able screener</div>
+				</div>
 				<Select
 					name={'trigger type'}
 					placeholder={'Choose cause of trigger'}

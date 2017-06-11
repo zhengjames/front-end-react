@@ -28,6 +28,7 @@
     "react-prop-types": "^0.4.0",
     "react-router": "^4.1.1",
     "react-tabs": "^1.0.0",
+    "react-toggle": "^4.0.1",
     "spectre.css": "^0.1.27",
     "style-loader": "^0.13.1",
     "superagent": "^3.5.2",
