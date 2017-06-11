@@ -3,13 +3,13 @@ import CheckboxOrRadioGroup from '../components/CheckboxOrRadioGroup';
 import SingleInput from '../components/SingleInput';
 import TextArea from '../components/TextArea';
 import Select from '../components/Select';
+import ScreenerToggle from '../components/ScreenerToggle'
 import request from 'superagent'
 import Toggle from 'react-toggle'
-import FormContainer from './FormContainer';
-class MacdFormContainer extends FormContainer {
+import ScreenerFormContainer from './ScreenerFormContainer';
+class MacdFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
-		this.isOn=true;
 		this.varToDescMap = {};
 		this.state = {
 			triggerTypes: [],
@@ -37,8 +37,6 @@ class MacdFormContainer extends FormContainer {
 				this.setState({
 					triggerTypes: this.variables.triggerTypes,
 					directions: this.variables.directions,
-					triggerTypeSelected: this.variables.triggerTypes[0],
-					directionSelected: this.variables.directions[0],
 				});
                 console.log(this.state.triggerTypes[0]);
 
@@ -104,18 +102,11 @@ class MacdFormContainer extends FormContainer {
 		return (
 			<form className="container" onSubmit={this.handleFormSubmit}>
 				<h5>MACD prediction screener</h5>
-				<div class="toggle-container">
-					<div class="toggle-desc">Screener is </div>
-					<Toggle
-						defaultChecked={this.isOn}
-						onChange={this.handleIsOnClick}
-						icons={{
-                            checked: <div class="toggle-en-dis">Dis</div>,
-							unchecked: <div class="toggle-en-dis">En</div>,
-                        }}/>
-					<div class="toggle-desc">abled</div>
-				</div>
-				<label>Type of trigger</label>
+
+				<ScreenerToggle
+					label="Screener"
+					defaultChecked={this.isOn}
+					controlFunc={this.handleIsOnClick} />
 				<Select
 					name={'trigger type'}
 					placeholder={'Choose the type of trigger'}
@@ -123,8 +114,8 @@ class MacdFormContainer extends FormContainer {
 					controlFunc={this.handleTriggerTypeSelect}
 					options={this.state.triggerTypes}
 					selectedOption={this.state.triggerTypeSelected} />
-				<label>Trigger direction</label>
 				<Select
+					label={'Trigger direction'}
 					name={'direction'}
 					placeholder={'Choose the trigger direction'}
 					controlFunc={this.handleDirectionSelection}

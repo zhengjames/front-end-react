@@ -5,15 +5,15 @@ import TextArea from '../components/TextArea';
 import Select from '../components/Select';
 import '../react-toggle.css'
 import request from 'superagent'
-import Toggle from 'react-toggle'
-class StochasticFormContainer extends Component {
+import ScreenerToggle from '../components/ScreenerToggle'
+import ScreenerFormContainer from './ScreenerFormContainer'
+class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
 		this.varToDescMap = {};
-		this.isOn = true;
 		this.state = {
 			isPredictiveScreening: null,
-			screenerSubtype: [],
+			screenerSubtypes: [],
 			screenerSubtypeSelected: '',
             triggerTypes: [],
             triggerTypeSelected: '',
@@ -41,14 +41,14 @@ class StochasticFormContainer extends Component {
 				this.setState({
 					//index 0 means default option
 					//RSI or classic stochastic?
-					screenerSubtype: this.variables.screenerSubtype,
-					screenerSubtypeSelected: this.variables.screenerSubtype[0],
+					screenerSubtypes: this.variables.screenerSubtypes,
+					screenerSubtypeSelected: '',
 					// //fast cross slow?
                     triggerTypes: this.variables.triggerTypes,
-					triggerTypeSelected: this.variables.triggerTypes[0],
+					triggerTypeSelected: '',
 					// //above, below, between?
 					directions: this.variables.directions,
-					directionSelected: this.variables.directions[0],
+					directionSelected: '',
 					// //days until triggered?
 					triggerWithinDays: this.variables.triggerWithinDays,
 					triggerWithinDaysSelected: this.variables.triggerWithinDays[0],
@@ -58,10 +58,6 @@ class StochasticFormContainer extends Component {
                 console.log(this.state.triggerTypes[0]);
 
             });
-	}
-
-	handleIsOnClick(e) {
-		this.isOn = !this.isOn;
 	}
 
     handleTriggerPredictiveScreeningSelect(e) {
@@ -123,13 +119,16 @@ class StochasticFormContainer extends Component {
 	render() {
 		return (
 			<form className="container" onSubmit={this.handleFormSubmit}>
-				<h5>MACD prediction screener</h5>
-				<div>
-				<Toggle
-					defaultChecked={this.state.isOn}
-					onChange={this.handleIsOnClick} />
-					<div style="display:inline-block">able screener</div>
-				</div>
+				<h5>Stochastic prediction screener</h5>
+				<ScreenerToggle
+					label="Screener"
+					defaultChecked={this.isOn}
+					controlFunc={this.handleIsOnClick} />
+				<Select
+					name="stochastic type"
+					placeholder='Choose the type of stochastic screener'
+					options={this.state.screenerSubtypes}
+					controlFunc={this.handleScreenerSubtypesSelect}/>
 				<Select
 					name={'trigger type'}
 					placeholder={'Choose cause of trigger'}

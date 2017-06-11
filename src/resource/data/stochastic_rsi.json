@@ -1,7 +1,7 @@
 {
   "variables": {
     "isPredictiveScreening":false,
-    "screenerSubtype":["CLASSIC", "RSI"],
+    "screenerSubtypes":["CLASSIC", "RSI"],
     "triggerTypes": [
       "SLOW_MA",
       "FAST_MA",

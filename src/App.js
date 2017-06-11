@@ -3,7 +3,7 @@ import '../node_modules/spectre.css/dist/spectre.min.css';
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs'
 import 'react-tabs/style/react-tabs.css';
 require('./styles.css');
-import FormContainer from './containers/FormContainer';
+import FormContainer from './containers/ScreenerFormContainer';
 import MacdFormContainer from './containers/MacdFormContainer.js'
 import StochasticFormContainer from './containers/StochasticFormContainer.js'
 
