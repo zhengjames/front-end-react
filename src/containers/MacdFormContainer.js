@@ -62,11 +62,14 @@ class MacdFormContainer extends ScreenerFormContainer {
 
 	handleClearForm(e) {
 		e.preventDefault();
-		this.setState({
-			triggerTypeSelected: this.variables.triggerTypes[0],
-			directionSelected: this.variables.directions[0],
-			triggerWithinDays: this.variables.triggerWithinDays,
-		});
+        console.log(document.querySelectorAll("div.react-tabs ul.react-tabs__tab-list li.react-tabs__tab"));
+		this.p
+
+        // this.setState({
+		// 	triggerTypeSelected: this.variables.triggerTypes[0],
+		// 	directionSelected: this.variables.directions[0],
+		// 	triggerWithinDays: this.variables.triggerWithinDays,
+		// });
 	}
 
 	handleFormSubmit(e) {
@@ -105,7 +108,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 
 				<ScreenerToggle
 					label="Screener"
-					defaultChecked={this.isOn}
+					defaultChecked={this.props.isOn}
 					controlFunc={this.handleIsOnClick} />
 				<Select
 					name={'trigger type'}

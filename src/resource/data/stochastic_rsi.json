@@ -12,7 +12,7 @@
       "BELOW",
       "BETWEEN"
     ],
-    "triggerWithinDays": [10],
+    "triggerWithinDays": [0],
 
     "descriptions": ["Stochastic Oscillator", "Stochastic Relative Strength Index"]
   },

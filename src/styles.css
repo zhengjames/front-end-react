@@ -25,3 +25,6 @@ input[type=submit],
 .btn-link {
     margin-top: 20px;
 }
+.screener-tab_is_on {
+    background-color:#000000;
+}
