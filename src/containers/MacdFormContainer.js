@@ -19,6 +19,8 @@ class MacdFormContainer extends ScreenerFormContainer {
 			tickersArr:[],
 			directionSelected: '',
 			triggerWithinDays: 10,
+			formContainerClassName : this.props.isEnabled ?
+				this.formContainerEnabledClassName : this.formContainerDisabledClassName
 		};
 		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 		this.handleClearForm = this.handleClearForm.bind(this);
@@ -26,7 +28,6 @@ class MacdFormContainer extends ScreenerFormContainer {
 		this.handleDirectionSelection = this.handleDirectionSelection.bind(this);
         this.handleTriggerWithinDaysChange = this.handleTriggerWithinDaysChange.bind(this);
         this.handleTextInput = this.handleTextInput.bind(this);
-
 	}
 	componentDidMount() {
 		fetch('../resource/data/macd.json')
@@ -103,8 +104,8 @@ class MacdFormContainer extends ScreenerFormContainer {
 
 	render() {
 		return (
-			<form className="container" onSubmit={this.handleFormSubmit}>
-				<h5>MACD prediction screener</h5>
+			<form className={this.state.formContainerClassName} onSubmit={this.handleFormSubmit}>
+				<h5 className="screener_header">MACD prediction screener</h5>
 
 				<ScreenerToggle
 					label="Screener"

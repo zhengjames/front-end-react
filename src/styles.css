@@ -26,5 +26,65 @@ input[type=submit],
     margin-top: 20px;
 }
 .screener-tab_is_disabled {
-    background-color:#000000;
+    background-color:#EAECEE;
+}
+.screener-tab_is_enabled {
+    background-color:#D4EFDF;
+}
+.screener-tab_is_unsatisfied {
+    background-color:#F5B7B1;
+}
+#root {
+    margin-left:25%;
+    margin-right:25%;
+}
+.react-tabs__tab--selected {
+    box-shadow: 0 0 5px hsl(208, 99%, 50%);
+    border-color: hsl(208, 99%, 50%);
+    outline: none;
+    border-radius:0px;
+    border:none;
+}
+
+.react-tabs__tab {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    margin-left: 3px;
+}
+
+.react-tabs__tab-list {
+    border-bottom:none;
+}
+.enabled_screener_form_container {
+    background-color: #EAFAF1;
+    box-shadow: 2px 2px 10px #D4EFDF;
+}
+
+.disabled_screener_form_container {
+    background-color: #F8F9F9;
+    box-shadow: 2px 2px 10px #EAECEE;
+}
+
+.unsatisfied_screener_form_container {
+    background-color: #FDEDEC;
+    box-shadow: 2px 2px 10px #EAECEE;
+}
+.form {
+    border: none;
+    border-radius: 0px;
+}
+
+.container {
+    border-radius: 0px;
+    border: none;
+    padding: 1rem;
+}
+
+.screener_header {
+    margin-top:1rem;
 }

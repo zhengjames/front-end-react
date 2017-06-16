@@ -21,6 +21,8 @@ class StochasticFormContainer extends ScreenerFormContainer {
 			directionSelected: '',
 			triggerWithinDays: [],
 			triggerWithinDaysSelected: '',
+            formContainerClassName : this.props.isEnabled ?
+                this.formContainerEnabledClassName : this.formContainerDisabledClassName
 		};
 
         this.handleTriggerPredictiveScreeningSelect = this.handleTriggerPredictiveScreeningSelect.bind(this);
@@ -119,8 +121,8 @@ class StochasticFormContainer extends ScreenerFormContainer {
 
 	render() {
 		return (
-			<form className="container" onSubmit={this.handleFormSubmit}>
-				<h5>Stochastic prediction screener</h5>
+			<form className={this.state.formContainerClassName} onSubmit={this.handleFormSubmit}>
+				<h5 className="screener_header">Stochastic prediction screener</h5>
 				<ScreenerToggle
 					label="Screener"
 					defaultChecked={this.props.isEnabled}
