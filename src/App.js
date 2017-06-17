@@ -6,9 +6,15 @@ require('./styles.css');
 import MacdFormContainer from './containers/MacdFormContainer.js'
 import StochasticFormContainer from './containers/StochasticFormContainer.js'
 import StockTickersFormContainer from './containers/StockTickersFormContainer.js'
+import {updateTickers} from "./actions/stockTickersAction"
+import {connect} from "react-redux"
 
-
-
+@connect((store) => {
+    return {
+        tickerString: store.ticker.tickerString,
+        isValidTicker: store.ticker.isValid
+    }
+})
 class App extends Component {
 
     constructor(props) {
@@ -66,7 +72,8 @@ class App extends Component {
                     <TabPanel>
                         <div id="stock_tickers_tab_content">
                             <StockTickersFormContainer
-                            isEnabled={this.state.tickersEnabled}
+                            isEnabled={this.props.isValidTicker}
+                            tickerString={this.props.tickerString}
                             handleIsEnabledToggle={this.handleTickerStatusOnToggle}/>
                         </div>
                     </TabPanel>
@@ -94,13 +101,19 @@ class App extends Component {
         }
     }
 
-    handleTickerStatusOnToggle(isEnabled) {
-        this.state.tickersEnabled = isEnabled;
-        if (isEnabled) {
+    handleTickerStatusOnToggle(payload) {
+        //handle states of App
+        this.state.tickersEnabled = payload.isValid;
+
+        if (this.state.tickersEnabled) {
             this.setState({tickersTabClassNames: this.enabledLabelClasses});
         } else {
             this.setState({tickersTabClassNames: this.unsatisfLabelClasses});
         }
+
+        //update store
+        this.props.dispatch(updateTickers({"isValid": payload.isValid,
+            "tickerString": payload.tickerString}));
     }
 }
 

@@ -12,28 +12,33 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 		super(props);
 		this.formContainerDisabledClassName = "container unsatisfied_screener_form_container";
         this.handleFormClassName = this.handleFormClassName.bind(this);
+        console.log("constructor of stockTickerFormContainer tickerString is" + this.props.tickerString)
 		this.state = {
-			stockTickers:'',
+			tickerStr:this.props.tickerString,
 			tickerArr:[],
-            formContainerClassName : this.formContainerDisabledClassName
+			isValid:this.props.isEnabled,
 		};
 
-        this.handleTextInput = this.handleTextInput.bind(this);
 
+        this.handleTextInput = this.handleTextInput.bind(this);
+        this.handleFormClassName = this.handleFormClassName.bind(this);
+        //update the css class for container based on previous results
+        this.handleFormClassName();
 	}
 
 
     handleTextInput(e) {
-		this.state.stockTickers = e.target.value;
-        console.log('text input: ', this.state.stockTickers);
-        this.state.stockTickers = this.state.stockTickers.replace(/\s+/g, '');
-        var isValid = false;
-        if (this.state.stockTickers.match(/^[a-z]+(,[a-z]+)*$/)) {
-        	isValid = true;
-            console.log('isValid: ', isValid);
+		this.state.tickerStr = e.target.value;
+		//trim spaces
+        this.state.tickerStr = this.state.tickerStr.replace(/\s+/g, '');
+        if (this.state.tickerStr.match(/^[a-z]+(,[a-z]+)*$/)) {
+        	this.state.isValid = true;
+            console.log('isValid: ', this.state.isValid);
 		}
-		this.props.handleIsEnabledToggle(isValid);
-		this.handleFormClassName(isValid);
+		//call parent class to update ticker information and if is of valid format
+		this.props.handleIsEnabledToggle({"isValid":this.state.isValid,
+		"tickerString": this.state.tickerStr});
+		this.handleFormClassName();
 	}
 
 	handleClearForm(e) {
@@ -42,8 +47,9 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 		});
 	}
 
-    handleFormClassName(isEnabled) {
-        if (isEnabled) {
+    handleFormClassName() {
+		console.log("is valid is ", this.state.isValid)
+        if (this.state.isValid) {
             this.state.formContainerClassName = this.formContainerEnabledClassName;
         } else {
             this.state.formContainerClassName = this.formContainerDisabledClassName;
@@ -61,7 +67,9 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 					resize={false}
 					name={'tickers'}
 					controlFunc={this.handleTextInput}
-					placeholder={'AMZ, APPl, NVDA...'} />
+					placeholder={'AMZ, APPl, NVDA...'}
+					content={this.state.tickerStr}
+				/>
 			</form>
 		);
 	}
