@@ -1,13 +1,13 @@
 /**
  * Created by jzheng on 6/15/17.
  */
-export default function reducer(state={
+export default function reducer(state = {
     tickerString: '',
     isValid: false
     }, action) {
 
     switch (action.type) {
-        case "UPDATE_TICKER":
+        case "UPDATE_TICKER_FORM":
             console.log("calling reducer UPDATE_TICKER and received " + action.payload.tickerString);
             console.log({...state, tickerString:action.payload.tickerString, isValid:action.payload.isValid});
 

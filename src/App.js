@@ -6,13 +6,14 @@ require('./styles.css');
 import MacdFormContainer from './containers/MacdFormContainer.js'
 import StochasticFormContainer from './containers/StochasticFormContainer.js'
 import StockTickersFormContainer from './containers/StockTickersFormContainer.js'
-import {updateTickers} from "./actions/stockTickersAction"
+import {updateTickers, updateMacdToggleOnOff} from "./actions/stockTickersAction"
 import {connect} from "react-redux"
 
 @connect((store) => {
     return {
         tickerString: store.ticker.tickerString,
-        isValidTicker: store.ticker.isValid
+        isValidTicker: store.ticker.isValid,
+        isEnabledMacd: store.macd.isEnabled
     }
 })
 class App extends Component {
@@ -24,15 +25,19 @@ class App extends Component {
         this.disabledLabelClasses = ["react-tabs__tab", "screener-tab_is_disabled"];
         this.unsatisfLabelClasses = ["react-tabs__tab", "screener-tab_is_unsatisfied"];
         this.state = {
-            //by default enable the two
-            macdEnabled : true,
             stochasticEnabled : true,
             tickersEnabled : false,
             //by default use the css that indicates enabled
             macdTabClassNames: this.enabledLabelClasses,
             stochasticTabClassNames: this.enabledLabelClasses,
-            tickersTabClassNames: this.unsatisfLabelClasses
+            tickersTabClassNames: this.unsatisfLabelClasses,
+            test:"hello",
 
+        };
+        if (this.props.isEnabledMacd) {
+            this.state.macdTabClassNames = this.enabledLabelClasses;
+        } else {
+            this.state.macdTabClassNames = this.disabledLabelClasses;
         }
 
         this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
@@ -57,8 +62,8 @@ class App extends Component {
                     <TabPanel>
                         <div id="macd_tab_content">
                             <MacdFormContainer
-                                isEnabled={this.state.macdEnabled}
                                 handleIsEnabledToggle={this.handleMacdStatusOnToggle}
+                                test1={this.state.test}
                             />
                         </div>
                     </TabPanel>
@@ -83,7 +88,7 @@ class App extends Component {
     }
 
     handleMacdStatusOnToggle(isEnabled) {
-        this.state.macdEnabled = isEnabled;
+        this.props.dispatch(updateMacdToggleOnOff(isEnabled));
         //enhance only
         if (isEnabled) {
             this.setState({macdTabClassNames:this.enabledLabelClasses});

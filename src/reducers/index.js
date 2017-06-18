@@ -4,7 +4,9 @@
 import {combineReducers} from "redux"
 
 import ticker from "./GlobalTabReducer"
+import macd from "./MacdReducer"
 
 export default combineReducers({
-    ticker
+    ticker,
+    macd
 })

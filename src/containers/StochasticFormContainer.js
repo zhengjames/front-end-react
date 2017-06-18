@@ -73,7 +73,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
         this.setState({triggerTypeSelected: e.target.value}, () => console.log('trigger type selected', this.state.triggerTypeSelected));
     }
     handleDirectionsSelect(e) {
-        this.setState({ directionSelected: e.target.value }, () => console.log('directions', this.state.directionSelected));
+        this.setState({ directionSelected: e.target.value }, () => console.log('directions', this.state.triggerDirectionSelected));
     }
     handleTriggerWithinDaysChange(e) {
         this.setState({triggerWithinDaysSelected: e.target.value}, () => console.log('trigger within n days', this.state.triggerWithinDaysSelected));
@@ -99,7 +99,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
 			"screener_arr": [{
             "__type__": "MACD",
             "trigger_cause": this.state.triggerTypeSelected,
-            "trigger_direction": this.state.directionSelected,
+            "trigger_direction": this.state.triggerDirectionSelected,
             "trigger_in_n_days": this.state.triggerWithinDays}]
         };
 
@@ -144,7 +144,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					placeholder={'Choose trigger direction'}
 					controlFunc={this.handleDirectionsSelect}
 					options={this.state.directions}
-					selectedOption={this.state.directionSelected} />
+					selectedOption={this.state.triggerDirectionSelected} />
 
                 <SingleInput
 					title={'Number of days before trigger'}
