@@ -6,7 +6,7 @@ require('./styles.css');
 import MacdFormContainer from './containers/MacdFormContainer.js'
 import StochasticFormContainer from './containers/StochasticFormContainer.js'
 import StockTickersFormContainer from './containers/StockTickersFormContainer.js'
-import {updateTickers, updateMacdToggleOnOff} from "./actions/stockTickersAction"
+import {updateTickers, updateMacdToggleOnOff, updateStochasticToggleOnOff} from "./actions/stockTickersAction"
 import {connect} from "react-redux"
 
 @connect((store) => {
@@ -19,26 +19,22 @@ import {connect} from "react-redux"
 class App extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
         this.enabledLabelClasses = ["react-tabs__tab", "screener-tab_is_enabled"];
         this.disabledLabelClasses = ["react-tabs__tab", "screener-tab_is_disabled"];
         this.unsatisfLabelClasses = ["react-tabs__tab", "screener-tab_is_unsatisfied"];
         this.state = {
             stochasticEnabled : true,
-            tickersEnabled : false,
             //by default use the css that indicates enabled
-            macdTabClassNames: this.enabledLabelClasses,
-            stochasticTabClassNames: this.enabledLabelClasses,
-            tickersTabClassNames: this.unsatisfLabelClasses,
-            test:"hello",
+            macdTabClassNames: (this.props.isEnabledMacd == true) ?
+                this.enabledLabelClasses : this.disabledLabelClasses,
 
+            stochasticTabClassNames: this.enabledLabelClasses,
+
+            tickersTabClassNames: (this.props.isValidTicker == true) ?
+                this.enabledLabelClasses : this.unsatisfLabelClasses,
         };
-        if (this.props.isEnabledMacd) {
-            this.state.macdTabClassNames = this.enabledLabelClasses;
-        } else {
-            this.state.macdTabClassNames = this.disabledLabelClasses;
-        }
 
         this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
         this.handleStochasticStatusOnToggle = this.handleStochasticStatusOnToggle.bind(this);
@@ -70,7 +66,6 @@ class App extends Component {
                     <TabPanel>
                         <div id="stochastic_tab_content">
                             <StochasticFormContainer
-                                isEnabled={this.state.stochasticEnabled}
                                 handleIsEnabledToggle={this.handleStochasticStatusOnToggle}/>
                         </div>
                     </TabPanel>
@@ -98,7 +93,7 @@ class App extends Component {
     }
 
     handleStochasticStatusOnToggle(isEnabled) {
-        this.state.stochasticEnabled = isEnabled;
+        this.props.dispatch(updateStochasticToggleOnOff(isEnabled));
         if (isEnabled) {
             this.setState({stochasticTabClassNames:this.enabledLabelClasses});
         } else {
@@ -108,9 +103,9 @@ class App extends Component {
 
     handleTickerStatusOnToggle(payload) {
         //handle states of App
-        this.state.tickersEnabled = payload.isValid;
+        var tickersEnabled = payload.isValid;
 
-        if (this.state.tickersEnabled) {
+        if (tickersEnabled) {
             this.setState({tickersTabClassNames: this.enabledLabelClasses});
         } else {
             this.setState({tickersTabClassNames: this.unsatisfLabelClasses});

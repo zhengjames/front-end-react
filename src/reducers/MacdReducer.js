@@ -6,15 +6,15 @@ export default function reducer(state = {
         isValid: false,
         triggerTypeSelected: '',
         triggerDirectionSelected: '',
-        triggerWithinDaysSelected: 10
+        triggerWithinDaysInput: ''
 }, action) {
     switch(action.type) {
         case "MACD_UPDATE_ALL":
-            var newState = {...state, isEnabed:action.payload.isEnabled,
+            var newState = {...state,
                 isValid:action.payload.isValid,
                 triggerTypeSelected: action.payload.triggerTypeSelected,
                 triggerDirectionSelected: action.payload.triggerDirectionSelected,
-                triggerWithinDaysSelected: action.payload.triggerWithinDaysSelected
+                triggerWithinDaysInput: action.payload.triggerWithinDaysInput
             };
             console.log("new state is ", newState);
             return newState;

@@ -6,7 +6,14 @@ import Select from '../components/Select';
 import request from 'superagent'
 import Toggle from 'react-toggle'
 import ScreenerFormContainer from './ScreenerFormContainer'
+import {connect} from 'react-redux'
 
+@connect( (store) => {
+    return {
+        isValid: store.ticker.isValid,
+        tickerString: store.ticker.tickerString,
+    }
+})
 class StockTickersFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
@@ -14,31 +21,33 @@ class StockTickersFormContainer extends ScreenerFormContainer {
         this.handleFormClassName = this.handleFormClassName.bind(this);
         console.log("constructor of stockTickerFormContainer tickerString is" + this.props.tickerString)
 		this.state = {
-			tickerStr:this.props.tickerString,
-			tickerArr:[],
-			isValid:this.props.isEnabled,
+			formContainerClassName: ''
 		};
-
-
         this.handleTextInput = this.handleTextInput.bind(this);
         this.handleFormClassName = this.handleFormClassName.bind(this);
-        //update the css class for container based on previous results
-        this.handleFormClassName();
 	}
+
+    componentDidMount() {
+        this.setState({
+            formContainerClassName: (true == this.props.isValid) ?
+                this.formContainerEnabledClassName : this.formContainerDisabledClassName
+        });
+    }
 
 
     handleTextInput(e) {
-		this.state.tickerStr = e.target.value;
 		//trim spaces
-        this.state.tickerStr = this.state.tickerStr.replace(/\s+/g, '');
-        if (this.state.tickerStr.match(/^[a-z]+(,[a-z]+)*$/)) {
-        	this.state.isValid = true;
-            console.log('isValid: ', this.state.isValid);
+		var tickerStr = e.target.value;
+        var isValid = false;
+        //make sure input is csv valid like TSEM, or AZN, BMY
+        if (tickerStr.match(/^([a-z]+\s*(\s*,\s*[a-z]+\s*)*|[a-z]+\s*(\s*,\s*[a-z]+\s*)*,)$/)) {
+        	isValid = true;
 		}
+        console.log('isValid: ', isValid);
 		//call parent class to update ticker information and if is of valid format
-		this.props.handleIsEnabledToggle({"isValid":this.state.isValid,
-		"tickerString": this.state.tickerStr});
-		this.handleFormClassName();
+		this.props.handleIsEnabledToggle({"isValid": isValid,
+		"tickerString": e.target.value});
+		this.handleFormClassName(isValid);
 	}
 
 	handleClearForm(e) {
@@ -47,9 +56,9 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 		});
 	}
 
-    handleFormClassName() {
-		console.log("is valid is ", this.state.isValid)
-        if (this.state.isValid) {
+    handleFormClassName(isValid) {
+		console.log("is valid is ", isValid)
+        if (isValid) {
             this.state.formContainerClassName = this.formContainerEnabledClassName;
         } else {
             this.state.formContainerClassName = this.formContainerDisabledClassName;
@@ -68,7 +77,7 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 					name={'tickers'}
 					controlFunc={this.handleTextInput}
 					placeholder={'AMZ, APPl, NVDA...'}
-					content={this.state.tickerStr}
+					content={this.props.tickerString}
 				/>
 			</form>
 		);

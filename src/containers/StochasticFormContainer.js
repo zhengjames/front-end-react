@@ -7,6 +7,20 @@ import '../react-toggle.css'
 import request from 'superagent'
 import ScreenerToggle from '../components/ScreenerToggle'
 import ScreenerFormContainer from './ScreenerFormContainer'
+import {connect} from 'react-redux'
+import {updateStochastic} from '../actions/stockTickersAction'
+
+
+
+@connect( (store) => {
+    return {
+        isEnabled: store.stochastic.isEnabled,
+		screenerSubtypeSelected: store.stochastic.screenerSubtypeSelected,
+        triggerTypeSelected: store.stochastic.triggerTypeSelected,
+        triggerDirectionSelected: store.stochastic.triggerDirectionSelected,
+        triggerWithinDaysSelected: store.stochastic.triggerWithinDaysSelected
+    }
+})
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
@@ -14,11 +28,11 @@ class StochasticFormContainer extends ScreenerFormContainer {
 		this.state = {
 			isPredictiveScreening: null,
 			screenerSubtypes: [],
-			screenerSubtypeSelected: '',
+			screenerSubtypeSelected: this.props.screenerSubtypeSelected,
             triggerTypes: [],
-            triggerTypeSelected: '',
+            triggerTypeSelected: this.props.triggerTypeSelected,
 			directions: [],
-			directionSelected: '',
+			triggerDirectionSelected: this.props.triggerDirectionSelected,
 			triggerWithinDays: [],
 			triggerWithinDaysSelected: '',
             formContainerClassName : this.props.isEnabled ?
@@ -33,6 +47,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
 
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
+        this.createUpdatePayloadAndDispatch = this.createUpdatePayloadAndDispatch.bind(this);
     }
 	componentDidMount() {
 		fetch('../resource/data/stochastic_rsi.json')
@@ -44,20 +59,16 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					//index 0 means default option
 					//RSI or classic stochastic?
 					screenerSubtypes: this.variables.screenerSubtypes,
-					screenerSubtypeSelected: '',
 					// //fast cross slow?
                     triggerTypes: this.variables.triggerTypes,
-					triggerTypeSelected: '',
 					// //above, below, between?
 					directions: this.variables.directions,
-					directionSelected: '',
 					// //days until triggered?
 					triggerWithinDays: this.variables.triggerWithinDays,
 					triggerWithinDaysSelected: this.variables.triggerWithinDays[0],
 					// //is it on predict mode?
 					predictiveScreeningSelected: this.variables.isPredictiveScreening
 				});
-                console.log(this.state.triggerTypes[0]);
 
             });
 	}
@@ -67,16 +78,32 @@ class StochasticFormContainer extends ScreenerFormContainer {
         // this.setState({predictiveScreeningSelected: !this.state.predictiveScreeningSelected});
     }
     handleScreenerSubtypesSelect(e) {
-		this.setState({screenerSubtypeSelected: e.target.value}, () => console.log('screener subtype ', this.state.screenerSubtypeSelected));
-    }
+		this.setState({screenerSubtypeSelected: e.target.value}, () =>
+			this.createUpdatePayloadAndDispatch());
+	}
     handleTriggerTypesSelect(e) {
-        this.setState({triggerTypeSelected: e.target.value}, () => console.log('trigger type selected', this.state.triggerTypeSelected));
-    }
+        this.setState({triggerTypeSelected: e.target.value}, () =>
+			this.createUpdatePayloadAndDispatch());
+	}
     handleDirectionsSelect(e) {
-        this.setState({ directionSelected: e.target.value }, () => console.log('directions', this.state.triggerDirectionSelected));
-    }
+        this.setState({ triggerDirectionSelected: e.target.value }, () =>
+			this.createUpdatePayloadAndDispatch());
+	}
     handleTriggerWithinDaysChange(e) {
-        this.setState({triggerWithinDaysSelected: e.target.value}, () => console.log('trigger within n days', this.state.triggerWithinDaysSelected));
+        this.setState({triggerWithinDaysSelected: e.target.value}, () =>
+			this.createUpdatePayloadAndDispatch());
+	}
+
+    createUpdatePayloadAndDispatch() {
+        var payload = {
+            screenerSubtypeSelected: this.state.screenerSubtypeSelected,
+            triggerTypeSelected: this.state.triggerTypeSelected,
+            triggerDirectionSelected: this.state.triggerDirectionSelected,
+        };
+
+        console.log("stochastic new payload to be dispatch ", payload);
+
+        this.props.dispatch(updateStochastic(payload))
     }
 
 	handleClearForm(e) {
@@ -131,28 +158,29 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					name="stochastic type"
 					placeholder='Choose the type of stochastic screener'
 					options={this.state.screenerSubtypes}
-					controlFunc={this.handleScreenerSubtypesSelect}/>
+					controlFunc={this.handleScreenerSubtypesSelect}
+					selectedOption={this.props.screenerSubtypeSelected} />
 				<Select
 					name={'trigger type'}
 					placeholder={'Choose cause of trigger'}
 					controlFunc={this.handleTriggerTypesSelect}
 					options={this.state.triggerTypes}
-					selectedOption={this.state.triggerTypeSelected} />
+					selectedOption={this.props.triggerTypeSelected} />
 
                 <Select
 					name={'direction'}
 					placeholder={'Choose trigger direction'}
 					controlFunc={this.handleDirectionsSelect}
 					options={this.state.directions}
-					selectedOption={this.state.triggerDirectionSelected} />
+					selectedOption={this.props.triggerDirectionSelected} />
 
-                <SingleInput
-					title={'Number of days before trigger'}
-					inputType={'number'}
-					name={'triggerWithinDays'}
-					controlFunc={this.handleTriggerWithinDaysChange}
-					content={this.state.triggerWithinDaysSelected}
-					placeholder={'Enter number of days before triggered'} />
+                {/*<SingleInput*/}
+					{/*title={'Number of days before trigger'}*/}
+					{/*inputType={'number'}*/}
+					{/*name={'triggerWithinDays'}*/}
+					{/*controlFunc={this.handleTriggerWithinDaysChange}*/}
+					{/*content={this.state.triggerWithinDaysSelected}*/}
+					{/*placeholder={'Enter number of days before triggered'} />*/}
 
                 <input
 					type="submit"

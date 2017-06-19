@@ -5,8 +5,10 @@ import {combineReducers} from "redux"
 
 import ticker from "./GlobalTabReducer"
 import macd from "./MacdReducer"
+import stochastic from "./StochasticReducer"
 
 export default combineReducers({
     ticker,
-    macd
+    macd,
+    stochastic
 })
