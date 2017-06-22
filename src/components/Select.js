@@ -6,6 +6,7 @@ const Select = (props) => (
 		<select
 			value={props.selectedOption}
 			onChange={props.controlFunc}
+			name={props.name}
 			className="form-select">
 			<option>{props.placeholder}</option>
             {props.options.map(option => {
@@ -16,6 +17,9 @@ const Select = (props) => (
                 );
             })}
 		</select>
+		<div>
+			{props.errorText}
+		</div>
 	</div>
 );
 
@@ -24,7 +28,8 @@ Select.propTypes = {
     options: PropTypes.array.isRequired,
     selectedOption: PropTypes.string,
     controlFunc: PropTypes.func.isRequired,
-    placeholder: PropTypes.string
+    placeholder: PropTypes.string,
+	errorText: PropTypes.string,
 };
 
 export default Select;

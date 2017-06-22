@@ -11,6 +11,7 @@ class ScreenerFormContainer extends Component {
         this.handleFormClassName = this.handleFormClassName.bind(this);
         this.formContainerEnabledClassName = "container enabled_screener_form_container";
         this.formContainerDisabledClassName = "container disabled_screener_form_container";
+
     }
 
     //calls parent class function

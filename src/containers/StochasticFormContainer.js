@@ -9,6 +9,7 @@ import ScreenerToggle from '../components/ScreenerToggle'
 import ScreenerFormContainer from './ScreenerFormContainer'
 import {connect} from 'react-redux'
 import {updateStochastic} from '../actions/stockTickersAction'
+import update from 'immutability-helper'
 
 
 
@@ -24,7 +25,7 @@ import {updateStochastic} from '../actions/stockTickersAction'
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
-		this.varToDescMap = {};
+        this.varToDescMap = {};
 		this.state = {
 			isPredictiveScreening: null,
 			screenerSubtypes: [],
@@ -38,17 +39,12 @@ class StochasticFormContainer extends ScreenerFormContainer {
             formContainerClassName : this.props.isEnabled ?
                 this.formContainerEnabledClassName : this.formContainerDisabledClassName
 		};
-
-        this.handleTriggerPredictiveScreeningSelect = this.handleTriggerPredictiveScreeningSelect.bind(this);
-        this.handleScreenerSubtypesSelect = this.handleScreenerSubtypesSelect.bind(this);
-        this.handleDirectionsSelect = this.handleDirectionsSelect.bind(this);
-        this.handleTriggerWithinDaysChange = this.handleTriggerWithinDaysChange.bind(this);
-        this.handleTriggerTypesSelect = this.handleTriggerTypesSelect.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
 
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
         this.createUpdatePayloadAndDispatch = this.createUpdatePayloadAndDispatch.bind(this);
-    }
+	}
 	componentDidMount() {
 		fetch('../resource/data/stochastic_rsi.json')
 			.then(res => res.json())
@@ -73,32 +69,23 @@ class StochasticFormContainer extends ScreenerFormContainer {
             });
 	}
 
-    handleTriggerPredictiveScreeningSelect(e) {
-        //just toggle between on and off
-        // this.setState({predictiveScreeningSelected: !this.state.predictiveScreeningSelected});
-    }
-    handleScreenerSubtypesSelect(e) {
-		this.setState({screenerSubtypeSelected: e.target.value}, () =>
-			this.createUpdatePayloadAndDispatch());
-	}
-    handleTriggerTypesSelect(e) {
-        this.setState({triggerTypeSelected: e.target.value}, () =>
-			this.createUpdatePayloadAndDispatch());
-	}
-    handleDirectionsSelect(e) {
-        this.setState({ triggerDirectionSelected: e.target.value }, () =>
-			this.createUpdatePayloadAndDispatch());
-	}
-    handleTriggerWithinDaysChange(e) {
-        this.setState({triggerWithinDaysSelected: e.target.value}, () =>
-			this.createUpdatePayloadAndDispatch());
+    /*
+    	Handle when user select one of the options
+    */
+	handleSelect(e) {
+		var newState = update(this.state, {
+				[e.target.name] : {$set: e.target.value}
+		});
+		this.setState(newState,
+			() => this.createUpdatePayloadAndDispatch());
+
 	}
 
     createUpdatePayloadAndDispatch() {
         var payload = {
             screenerSubtypeSelected: this.state.screenerSubtypeSelected,
             triggerTypeSelected: this.state.triggerTypeSelected,
-            triggerDirectionSelected: this.state.triggerDirectionSelected,
+            triggerDirectionSelected: this.state.triggerDirectionSelected
         };
 
         console.log("stochastic new payload to be dispatch ", payload);
@@ -109,12 +96,13 @@ class StochasticFormContainer extends ScreenerFormContainer {
 	handleClearForm(e) {
 		e.preventDefault();
 		this.setState({
-			triggerSubtypeSelected: this.variables.triggerTypes[0],
-			directionSelected: this.variables.directions[0],
-			triggerWithinDays: this.variables.triggerWithinDays[0],
-			predictiveScreeningSelected: this.variables.isPredictiveScreening[0],
+			screenerSubtypeSelected: '',
+			triggerdirectionSelected: '',
+			triggerTypeSelected: '',
+			triggerWithinDaysSelected: '',
+			predictiveScreeningSelected: ''
 
-		});
+		}, () => this.createUpdatePayloadAndDispatch());
 	}
 
 	handleFormSubmit(e) {
@@ -155,22 +143,23 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					defaultChecked={this.props.isEnabled}
 					controlFunc={this.handleIsEnabledToggle} />
 				<Select
-					name="stochastic type"
+					name='screenerSubtypeSelected'
 					placeholder='Choose the type of stochastic screener'
 					options={this.state.screenerSubtypes}
-					controlFunc={this.handleScreenerSubtypesSelect}
-					selectedOption={this.props.screenerSubtypeSelected} />
+					controlFunc={this.handleSelect}
+					selectedOption={this.props.screenerSubtypeSelected}
+				/>
 				<Select
-					name={'trigger type'}
+					name='triggerTypeSelected'
 					placeholder={'Choose cause of trigger'}
-					controlFunc={this.handleTriggerTypesSelect}
+					controlFunc={this.handleSelect}
 					options={this.state.triggerTypes}
 					selectedOption={this.props.triggerTypeSelected} />
 
                 <Select
-					name={'direction'}
+					name='triggerDirectionSelected'
 					placeholder={'Choose trigger direction'}
-					controlFunc={this.handleDirectionsSelect}
+					controlFunc={this.handleSelect}
 					options={this.state.directions}
 					selectedOption={this.props.triggerDirectionSelected} />
 

@@ -7,15 +7,16 @@ import ScreenerToggle from '../components/ScreenerToggle'
 import request from 'superagent'
 import Toggle from 'react-toggle'
 import ScreenerFormContainer from './ScreenerFormContainer';
-import { connect } from "react-redux"
+import { connect } from 'react-redux'
 import {updateMacd} from '../actions/stockTickersAction'
+import update from 'immutability-helper'
 
 @connect( (store) => {
 	return {
 		isEnabled: store.macd.isEnabled,
 		triggerTypeSelected: store.macd.triggerTypeSelected,
 		triggerDirectionSelected: store.macd.triggerDirectionSelected,
-		triggerWithinDaysSelected: store.macd.triggerWithinDaysSelected
+		triggerWithinDaysInput: store.macd.triggerWithinDaysInput
 	}
 })
 class MacdFormContainer extends ScreenerFormContainer {
@@ -29,15 +30,15 @@ class MacdFormContainer extends ScreenerFormContainer {
 			tickers: '',
 			tickersArr:[],
 			triggerDirectionSelected: this.props.triggerDirectionSelected,
+			triggerWithinDaysInput: this.props.triggerWithinDaysInput,
 			triggerWithinDays: '',
 			formContainerClassName : this.props.isEnabled ?
 				this.formContainerEnabledClassName : this.formContainerDisabledClassName
 		};
+
 		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 		this.handleClearForm = this.handleClearForm.bind(this);
-		this.handleTriggerTypeSelect = this.handleTriggerTypeSelect.bind(this);
-		this.handleDirectionSelect = this.handleDirectionSelect.bind(this);
-        this.handleTriggerWithinDaysChange = this.handleTriggerWithinDaysChange.bind(this);
+		this.handleSelect = this.handleSelect.bind(this);
 	}
 	componentDidMount() {
 		fetch('../resource/data/macd.json')
@@ -54,20 +55,17 @@ class MacdFormContainer extends ScreenerFormContainer {
             });
 	}
 
-    handleTriggerTypeSelect(e) {
-        this.state.triggerTypeSelected = e.target.value;
-		console.log('trigger type', this.state.triggerTypeSelected);
-    	this.createUpdatePayloadAndDispatch();
-	}
-	handleDirectionSelect(e) {
-		this.state.triggerDirectionSelected = e.target.value;
-		console.log('directions', this.state.triggerDirectionSelected);
-        this.createUpdatePayloadAndDispatch();
-	}
-	handleTriggerWithinDaysChange(e) {
-        this.setState({triggerWithinDays: e.target.value}, () => console.log('trigger within n days', this.state.triggerWithinDays));
-        this.createUpdatePayloadAndDispatch();
-	}
+	/*
+	 Handle when user select one of the options
+	 */
+    handleSelect(e) {
+        var newState = update(this.state, {
+            [e.target.name] : {$set: e.target.value}
+        });
+        this.setState(newState,
+            () => this.createUpdatePayloadAndDispatch());
+
+    }
 
 	//setup payload of current states and update all at once in store
 	createUpdatePayloadAndDispatch() {
@@ -75,23 +73,23 @@ class MacdFormContainer extends ScreenerFormContainer {
             isEnabled: this.state.isEnabled,
             triggerTypeSelected: this.state.triggerTypeSelected,
             triggerDirectionSelected: this.state.triggerDirectionSelected,
-            triggerWithinDaysSelected: this.state.triggerWithinDays
+            triggerWithinDaysInput: this.state.triggerWithinDaysInput
 		};
 
-		console.log("macd new payload to be dispatch ", payload);
+		console.log('macd new payload to be dispatch ', payload);
 
 		this.props.dispatch(updateMacd(payload))
 	}
 
 	handleClearForm(e) {
 		e.preventDefault();
-        console.log(document.querySelectorAll("div.react-tabs ul.react-tabs__tab-list li.react-tabs__tab"));
+        console.log(document.querySelectorAll('div.react-tabs ul.react-tabs__tab-list li.react-tabs__tab'));
 
-        // this.setState({
-		// 	triggerTypeSelected: this.variables.triggerTypes[0],
-		// 	directionSelected: this.variables.directions[0],
-		// 	triggerWithinDays: this.variables.triggerWithinDays,
-		// });
+        this.setState({
+			triggerTypeSelected: '',
+			triggerDirectionSelected: '',
+			triggerWithinDaysInput: '',
+		}, () => this.createUpdatePayloadAndDispatch());
 	}
 
 	handleFormSubmit(e) {
@@ -99,12 +97,12 @@ class MacdFormContainer extends ScreenerFormContainer {
 
 
         const formPayload = {
-        	"tickers_arr": this.state.tickersArr,
-			"screener_arr": [{
-            "__type__": "MACD",
-            "trigger_cause": this.state.triggerTypeSelected,
-            "trigger_direction": this.state.triggerDirectionSelected,
-            "trigger_in_n_days": this.state.triggerWithinDays}]
+        	'tickers_arr': this.state.tickersArr,
+			'screener_arr': [{
+            '__type__': 'MACD',
+            'trigger_cause': this.state.triggerTypeSelected,
+            'trigger_direction': this.state.triggerDirectionSelected,
+            'trigger_in_n_days': this.state.triggerWithinDays}]
         };
 
         console.log(JSON.stringify(formPayload));
@@ -116,7 +114,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 
             .end(function(err, res) {
                 if (err || !res.ok) {
-                    console.log("response error");
+                    console.log('response error');
                 } else {
                     console.log(JSON.stringify(res.body));
                 }
@@ -126,40 +124,40 @@ class MacdFormContainer extends ScreenerFormContainer {
 	render() {
 		return (
 			<form className={this.state.formContainerClassName} onSubmit={this.handleFormSubmit}>
-				<h5 className="screener_header">MACD prediction screener</h5>
+				<h5 className='screener_header'>MACD prediction screener</h5>
 
 				<ScreenerToggle
-					label="Screener"
+					label='Screener'
 					defaultChecked={this.props.isEnabled}
-					controlFunc={this.handleIsEnabledToggle} />
+					controlFunc={this.handleSelect} />
 				<Select
-					name={'trigger type'}
+					name='triggerTypeSelected'
 					placeholder={'Choose the type of trigger'}
 					title={'Trigger within the number of days?'}
-					controlFunc={this.handleTriggerTypeSelect}
+					controlFunc={this.handleSelect}
 					options={this.state.triggerTypes}
 					selectedOption={this.props.triggerTypeSelected} />
 				<Select
 					label={'Trigger direction'}
-					name={'direction'}
+					name='triggerDirectionSelected'
 					placeholder={'Choose the trigger direction'}
-					controlFunc={this.handleDirectionSelect}
+					controlFunc={this.handleSelect}
 					options={this.state.directions}
 					selectedOption={this.props.triggerDirectionSelected} />
 				<SingleInput
 					inputType={'number'}
 					title={'Trigger within the number of days?'}
-					name={'triggerWithinDays'}
-					controlFunc={this.handleTriggerWithinDaysChange}
-					content={this.state.triggerWithinDays}
+					name='triggerWithinDaysInput'
+					controlFunc={this.handleSelect}
+					content={this.props.triggerWithinDaysInput}
 					placeholder={'Enter number of days before triggered'} />
 
 				<input
-					type="submit"
-					className="btn btn-primary float-right"
-					value="Submit"/>
+					type='submit'
+					className='btn btn-primary float-right'
+					value='Submit'/>
                 <button
-                    className="btn btn-link float-left"
+                    className='btn btn-link float-left'
                     onClick={this.handleClearForm}>Clear form</button>
 			</form>
 		);
