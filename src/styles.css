@@ -86,5 +86,19 @@ input[type=submit],
 }
 
 .screener_header {
-    margin-top:1rem;
+    margin-top: 1rem;
+}
+
+#submit_button {
+    color: #000;
+    background-color: #F4ECF7;
+    -webkit-transition: color .5s;
+    -moz-transition:    color .5s;
+    -ms-transition:     color .5s;
+    -o-transition:      color .5s;
+}
+
+#submit_button:hover {
+    color: #FFF;
+    background-color: #6C3483;
 }

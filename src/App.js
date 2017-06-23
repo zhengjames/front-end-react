@@ -8,7 +8,7 @@ import StochasticFormContainer from './containers/StochasticFormContainer.js'
 import StockTickersFormContainer from './containers/StockTickersFormContainer.js'
 import {updateTickers, updateMacdToggleOnOff, updateStochasticToggleOnOff} from "./actions/stockTickersAction"
 import {connect} from "react-redux"
-
+import {Button, Glyphicon} from 'react-bootstrap'
 @connect((store) => {
     return {
         tickerString: store.ticker.tickerString,
@@ -54,6 +54,7 @@ class App extends Component {
                         <Tab className={this.state.macdTabClassNames}>MACD</Tab>
                         <Tab className={this.state.stochasticTabClassNames}>Stochastic RSI</Tab>
                         <Tab className={this.state.tickersTabClassNames}> Stock Tickers</Tab>
+                        <li className="react-tabs__tab" id="submit_button"><Glyphicon glyph="chevron-right" /></li>
                     </TabList>
                     <TabPanel>
                         <div id="macd_tab_content">

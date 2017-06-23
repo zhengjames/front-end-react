@@ -16,7 +16,6 @@ export default function reducer(state = {
                 triggerDirectionSelected: action.payload.triggerDirectionSelected,
                 triggerWithinDaysInput: action.payload.triggerWithinDaysInput
             };
-            console.log("new state is ", newState);
             return newState;
         case 'MACD_TOGGLE_ON_OFF':
             console.log("new state is ", {...state, isEnabled:action.payload});

@@ -10,7 +10,7 @@ import ScreenerFormContainer from './ScreenerFormContainer';
 import { connect } from 'react-redux'
 import {updateMacd} from '../actions/stockTickersAction'
 import update from 'immutability-helper'
-
+import logger from 'react-logger'
 @connect( (store) => {
 	return {
 		isEnabled: store.macd.isEnabled,
@@ -39,6 +39,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 		this.handleClearForm = this.handleClearForm.bind(this);
 		this.handleSelect = this.handleSelect.bind(this);
+
 	}
 	componentDidMount() {
 		fetch('../resource/data/macd.json')
@@ -76,9 +77,9 @@ class MacdFormContainer extends ScreenerFormContainer {
             triggerWithinDaysInput: this.state.triggerWithinDaysInput
 		};
 
-		console.log('macd new payload to be dispatch ', payload);
+		logger.log('macd new payload to be dispatch ', payload);
 
-		this.props.dispatch(updateMacd(payload))
+		this.props.dispatch(updateMacd(payload));
 	}
 
 	handleClearForm(e) {
