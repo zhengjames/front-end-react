@@ -11,6 +11,14 @@ import { connect } from 'react-redux'
 import {updateMacd} from '../actions/stockTickersAction'
 import update from 'immutability-helper'
 import logger from 'react-logger'
+import {run, ruleRunner, required, mustMatch, minLength} from '../validation/ruleRunner.js'
+
+const fieldValidations = [
+    ruleRunner("triggerTypeSelected", "triggerType", required)
+    // ruleRunner("triggerDirectionSelected", "triggerDirection", required),
+    // ruleRunner("triggerWithinDaysInput", "triggerWithinDays", required)
+];
+
 @connect( (store) => {
 	return {
 		isEnabled: store.macd.isEnabled,
@@ -19,6 +27,7 @@ import logger from 'react-logger'
 		triggerWithinDaysInput: store.macd.triggerWithinDaysInput
 	}
 })
+
 class MacdFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
@@ -33,14 +42,17 @@ class MacdFormContainer extends ScreenerFormContainer {
 			triggerWithinDaysInput: this.props.triggerWithinDaysInput,
 			triggerWithinDays: '',
 			formContainerClassName : this.props.isEnabled ?
-				this.formContainerEnabledClassName : this.formContainerDisabledClassName
+				this.formContainerEnabledClassName : this.formContainerDisabledClassName,
+			showErrors: false,
+			validationErrors: {}
 		};
 
 		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 		this.handleClearForm = this.handleClearForm.bind(this);
 		this.handleSelect = this.handleSelect.bind(this);
-
+		this.errorFor = this.errorFor.bind(this);
 	}
+
 	componentDidMount() {
 		fetch('../resource/data/macd.json')
 			.then(res => res.json())
@@ -56,6 +68,9 @@ class MacdFormContainer extends ScreenerFormContainer {
             });
 	}
 
+	errorFor(field) {
+		return this.state.validationErrors[field] || "";
+	}
 	/*
 	 Handle when user select one of the options
 	 */
@@ -64,8 +79,10 @@ class MacdFormContainer extends ScreenerFormContainer {
             [e.target.name] : {$set: e.target.value}
         });
         this.setState(newState,
-            () => this.createUpdatePayloadAndDispatch());
-
+            () => {
+                this.createUpdatePayloadAndDispatch()
+                this.state.validationErrors = run(this.state, fieldValidations);
+            });
     }
 
 	//setup payload of current states and update all at once in store
@@ -95,31 +112,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 
 	handleFormSubmit(e) {
         e.preventDefault();
-
-
-        const formPayload = {
-        	'tickers_arr': this.state.tickersArr,
-			'screener_arr': [{
-            '__type__': 'MACD',
-            'trigger_cause': this.state.triggerTypeSelected,
-            'trigger_direction': this.state.triggerDirectionSelected,
-            'trigger_in_n_days': this.state.triggerWithinDays}]
-        };
-
-        console.log(JSON.stringify(formPayload));
-
-
-        request.post('http://localhost:8070/screen')
-            .set('Content-Type', 'application/json')
-            .send(formPayload)
-
-            .end(function(err, res) {
-                if (err || !res.ok) {
-                    console.log('response error');
-                } else {
-                    console.log(JSON.stringify(res.body));
-                }
-            });
+		this.setState({showErrors: true})
     }
 
 	render() {
@@ -137,7 +130,11 @@ class MacdFormContainer extends ScreenerFormContainer {
 					title={'Trigger within the number of days?'}
 					controlFunc={this.handleSelect}
 					options={this.state.triggerTypes}
-					selectedOption={this.props.triggerTypeSelected} />
+					selectedOption={this.props.triggerTypeSelected}
+					text={this.props.triggerTypes}
+					errorText={this.errorFor("triggerTypeSelected")}
+					showError={this.state.showErrors}
+				/>
 				<Select
 					label={'Trigger direction'}
 					name='triggerDirectionSelected'

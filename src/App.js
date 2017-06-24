@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
-import '../node_modules/spectre.css/dist/spectre.min.css';
+import React, { Component } from 'react'
+import '../node_modules/spectre.css/dist/spectre.min.css'
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs'
-import 'react-tabs/style/react-tabs.css';
-require('./styles.css');
-import MacdFormContainer from './containers/MacdFormContainer.js'
+import 'react-tabs/style/react-tabs.css'
+import MacdFormContainer from './containers/MacdFormContainer'
 import StochasticFormContainer from './containers/StochasticFormContainer.js'
 import StockTickersFormContainer from './containers/StockTickersFormContainer.js'
 import {updateTickers, updateMacdToggleOnOff, updateStochasticToggleOnOff} from "./actions/stockTickersAction"
 import {connect} from "react-redux"
 import {Button, Glyphicon} from 'react-bootstrap'
+require('./styles.css');
 @connect((store) => {
     return {
         tickerString: store.ticker.tickerString,
@@ -54,7 +54,7 @@ class App extends Component {
                         <Tab className={this.state.macdTabClassNames}>MACD</Tab>
                         <Tab className={this.state.stochasticTabClassNames}>Stochastic RSI</Tab>
                         <Tab className={this.state.tickersTabClassNames}> Stock Tickers</Tab>
-                        <li className="react-tabs__tab" id="submit_button"><Glyphicon glyph="chevron-right" /></li>
+                        <li className="react-tabs__tab" id="submit_button">Submit<Glyphicon glyph="chevron-right" /></li>
                     </TabList>
                     <TabPanel>
                         <div id="macd_tab_content">

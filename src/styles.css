@@ -91,7 +91,7 @@ input[type=submit],
 
 #submit_button {
     color: #000;
-    background-color: #F4ECF7;
+    background-color: #EBF5FB;
     -webkit-transition: color .5s;
     -moz-transition:    color .5s;
     -ms-transition:     color .5s;
@@ -100,5 +100,10 @@ input[type=submit],
 
 #submit_button:hover {
     color: #FFF;
-    background-color: #6C3483;
+    background-color: #1B4F72;
+}
+
+#submit_button:active {
+    color: #000;
+    background-color: #EBF5FB;
 }
