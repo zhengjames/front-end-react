@@ -9,9 +9,14 @@ import ScreenerToggle from '../components/ScreenerToggle'
 import ScreenerFormContainer from './ScreenerFormContainer'
 import {connect} from 'react-redux'
 import {updateStochastic} from '../actions/stockTickersAction'
-import update from 'immutability-helper'
+import {run, ruleRunner, required, mustMatch, minLength} from '../validation/ruleRunner.js'
 
 
+const fieldValidations = [
+    ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
+    ruleRunner("triggerDirectionSelected", "Trigger direction", required),
+    ruleRunner("triggerTypeSelected", "Trigger type selected", required)
+];
 
 @connect( (store) => {
     return {
@@ -25,6 +30,11 @@ import update from 'immutability-helper'
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
+		this.fieldValidations = [
+            ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
+            ruleRunner("triggerDirectionSelected", "Trigger direction", required),
+            ruleRunner("triggerTypeSelected", "Trigger type selected", required)
+        ];
         this.varToDescMap = {};
 		this.state = {
 			isPredictiveScreening: null,
@@ -37,13 +47,17 @@ class StochasticFormContainer extends ScreenerFormContainer {
 			triggerWithinDays: [],
 			triggerWithinDaysSelected: '',
             formContainerClassName : this.props.isEnabled ?
-                this.formContainerEnabledClassName : this.formContainerDisabledClassName
+                this.formContainerEnabledClassName : this.formContainerDisabledClassName,
+            showErrors: false,
+            validationErrors: {}
 		};
-        this.handleSelect = this.handleSelect.bind(this);
-
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
-        this.createUpdatePayloadAndDispatch = this.createUpdatePayloadAndDispatch.bind(this);
+        this.placeHolderText = {
+            'screenerSubtypeSelected' : 'Choose the type of stochastic screener',
+			'triggerTypeSelected' : 'Choose cause of trigger',
+			'triggerDirectionSelected' : 'Choose trigger direction'
+		};
 	}
 	componentDidMount() {
 		fetch('../resource/data/stochastic_rsi.json')
@@ -69,23 +83,14 @@ class StochasticFormContainer extends ScreenerFormContainer {
             });
 	}
 
-    /*
-    	Handle when user select one of the options
-    */
-	handleSelect(e) {
-		var newState = update(this.state, {
-				[e.target.name] : {$set: e.target.value}
-		});
-		this.setState(newState,
-			() => this.createUpdatePayloadAndDispatch());
-
-	}
-
     createUpdatePayloadAndDispatch() {
         var payload = {
+        	isEnabled: this.state.isEnabled,
             screenerSubtypeSelected: this.state.screenerSubtypeSelected,
             triggerTypeSelected: this.state.triggerTypeSelected,
-            triggerDirectionSelected: this.state.triggerDirectionSelected
+            triggerDirectionSelected: this.state.triggerDirectionSelected,
+			validationErrors: this.state.validationErrors,
+			showErrors: this.state.showErrors
         };
 
         console.log("stochastic new payload to be dispatch ", payload);
@@ -105,33 +110,12 @@ class StochasticFormContainer extends ScreenerFormContainer {
 		}, () => this.createUpdatePayloadAndDispatch());
 	}
 
-	handleFormSubmit(e) {
+    handleFormSubmit(e) {
         e.preventDefault();
-
-
-        const formPayload = {
-        	"tickers_arr": this.state.tickersArr,
-			"screener_arr": [{
-            "__type__": "MACD",
-            "trigger_cause": this.state.triggerTypeSelected,
-            "trigger_direction": this.state.triggerDirectionSelected,
-            "trigger_in_n_days": this.state.triggerWithinDays}]
-        };
-
-        console.log(JSON.stringify(formPayload));
-
-
-        request.post('http://localhost:8070/screen')
-            .set('Content-Type', 'application/json')
-            .send(formPayload)
-
-            .end(function(err, res) {
-                if (err || !res.ok) {
-                    console.log("response error");
-                } else {
-                    console.log(JSON.stringify(res.body));
-                }
-            });
+        //if enabled then show error
+        this.setState({showErrors: this.props.isEnabled});
+        var validationError = run(this.state, fieldValidations);
+        this.setState({validationErrors: validationError});
     }
 
 	render() {
@@ -144,24 +128,33 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					controlFunc={this.handleIsEnabledToggle} />
 				<Select
 					name='screenerSubtypeSelected'
-					placeholder='Choose the type of stochastic screener'
+					placeholder={this.placeHolderText.screenerSubtypeSelected}
 					options={this.state.screenerSubtypes}
 					controlFunc={this.handleSelect}
 					selectedOption={this.props.screenerSubtypeSelected}
+					errorText={this.errorFor('screenerSubtypeSelected')}
+					showError={this.state.showErrors && this.props.isEnabled}
+
 				/>
 				<Select
 					name='triggerTypeSelected'
-					placeholder={'Choose cause of trigger'}
+					placeholder={this.placeHolderText.triggerTypeSelected}
 					controlFunc={this.handleSelect}
 					options={this.state.triggerTypes}
-					selectedOption={this.props.triggerTypeSelected} />
+					selectedOption={this.props.triggerTypeSelected}
+					errorText={this.errorFor('triggerTypeSelected')}
+					showError={this.state.showErrors}
+				/>
 
                 <Select
 					name='triggerDirectionSelected'
-					placeholder={'Choose trigger direction'}
+					placeholder={this.placeHolderText.triggerDirectionSelected}
 					controlFunc={this.handleSelect}
 					options={this.state.directions}
-					selectedOption={this.props.triggerDirectionSelected} />
+					selectedOption={this.props.triggerDirectionSelected}
+					errorText={this.errorFor('triggerDirectionSelected')}
+					showError={this.state.showErrors}
+				/>
 
                 {/*<SingleInput*/}
 					{/*title={'Number of days before trigger'}*/}
@@ -171,13 +164,9 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					{/*content={this.state.triggerWithinDaysSelected}*/}
 					{/*placeholder={'Enter number of days before triggered'} />*/}
 
-                <input
-					type="submit"
-					className="btn btn-primary float-right"
-					value="Submit"/>
                 <button
                     className="btn btn-link float-left"
-                    onClick={this.handleClearForm}>Clear form</button>
+                    onClick={this.handleClearForm}>Clear</button>
 			</form>
 		);
 	}

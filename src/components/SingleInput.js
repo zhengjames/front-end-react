@@ -1,18 +1,38 @@
 import React from 'react';
 import PropTypes from 'prop-types'
+import OptionallyDisplayed from './OptionallyDisplayed'
 
-const SingleInput = (props) => (
-	<div className="form-group">
-		<label className="form-label">{props.title}</label>
-		<input
-			className="form-input"
-			name={props.name}
-			type={props.inputType}
-			value={props.content}
-			onChange={props.controlFunc}
-			placeholder={props.placeholder} />
-	</div>
-);
+
+class SingleInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.shouldDisplayError = this.shouldDisplayError.bind(this);
+    }
+
+    shouldDisplayError() {
+        return this.props.showError && this.props.errorText !== "";
+    }
+
+    render() {
+        return (
+			<div className="form-group">
+				<label className="form-label">{this.props.title}</label>
+				<input
+					className="form-input"
+					name={this.props.name}
+					type={this.props.inputType}
+					value={this.props.content}
+					onChange={this.props.controlFunc}
+					placeholder={this.props.placeholder}/>
+				<OptionallyDisplayed display={this.shouldDisplayError()}>
+					<div className="validation-error">
+						<span className="text">{this.props.errorText}</span>
+					</div>
+				</OptionallyDisplayed>
+			</div>
+        )
+    };
+}
 
 SingleInput.propTypes = {
 	inputType: PropTypes.oneOf(['text', 'number']).isRequired,

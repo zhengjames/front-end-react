@@ -107,3 +107,8 @@ input[type=submit],
     color: #000;
     background-color: #EBF5FB;
 }
+
+.validation-error {
+    color: #F5B7B1;
+    padding: .5rem .8rem;
+}

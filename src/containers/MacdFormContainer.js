@@ -11,13 +11,7 @@ import { connect } from 'react-redux'
 import {updateMacd} from '../actions/stockTickersAction'
 import update from 'immutability-helper'
 import logger from 'react-logger'
-import {run, ruleRunner, required, mustMatch, minLength} from '../validation/ruleRunner.js'
-
-const fieldValidations = [
-    ruleRunner("triggerTypeSelected", "triggerType", required)
-    // ruleRunner("triggerDirectionSelected", "triggerDirection", required),
-    // ruleRunner("triggerWithinDaysInput", "triggerWithinDays", required)
-];
+import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from '../validation/ruleRunner.js'
 
 @connect( (store) => {
 	return {
@@ -31,6 +25,11 @@ const fieldValidations = [
 class MacdFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
+        this.fieldValidations = [
+            ruleRunner("triggerTypeSelected", "triggerType", required),
+            ruleRunner("triggerDirectionSelected", "triggerDirection", required),
+            ruleRunner("triggerWithinDaysInput", "triggerWithinDays", required)
+        ];
 		this.varToDescMap = {};
 		this.state = {
 			triggerTypes: [],
@@ -46,11 +45,14 @@ class MacdFormContainer extends ScreenerFormContainer {
 			showErrors: false,
 			validationErrors: {}
 		};
+		this.placeHolderText = {
+			'triggerTypeSelected' : 'Choose the type of trigger',
+			'triggerDirectionSelected' : 'Choose the trigger direction',
+			'triggerWithinDaysInput' : 'Enter number of days before triggered'
+		};
 
 		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 		this.handleClearForm = this.handleClearForm.bind(this);
-		this.handleSelect = this.handleSelect.bind(this);
-		this.errorFor = this.errorFor.bind(this);
 	}
 
 	componentDidMount() {
@@ -68,30 +70,15 @@ class MacdFormContainer extends ScreenerFormContainer {
             });
 	}
 
-	errorFor(field) {
-		return this.state.validationErrors[field] || "";
-	}
-	/*
-	 Handle when user select one of the options
-	 */
-    handleSelect(e) {
-        var newState = update(this.state, {
-            [e.target.name] : {$set: e.target.value}
-        });
-        this.setState(newState,
-            () => {
-                this.createUpdatePayloadAndDispatch()
-                this.state.validationErrors = run(this.state, fieldValidations);
-            });
-    }
-
 	//setup payload of current states and update all at once in store
 	createUpdatePayloadAndDispatch() {
 		var payload = {
             isEnabled: this.state.isEnabled,
             triggerTypeSelected: this.state.triggerTypeSelected,
             triggerDirectionSelected: this.state.triggerDirectionSelected,
-            triggerWithinDaysInput: this.state.triggerWithinDaysInput
+            triggerWithinDaysInput: this.state.triggerWithinDaysInput,
+            validationErrors: this.state.validationErrors,
+            showErrors: this.state.showErrors
 		};
 
 		logger.log('macd new payload to be dispatch ', payload);
@@ -112,7 +99,10 @@ class MacdFormContainer extends ScreenerFormContainer {
 
 	handleFormSubmit(e) {
         e.preventDefault();
-		this.setState({showErrors: true})
+        //if enabled then show error
+		this.setState({showErrors: this.props.isEnabled});
+		var validationError = run(this.state, this.fieldValidations);
+		this.setState({validationErrors: validationError});
     }
 
 	render() {
@@ -123,40 +113,42 @@ class MacdFormContainer extends ScreenerFormContainer {
 				<ScreenerToggle
 					label='Screener'
 					defaultChecked={this.props.isEnabled}
-					controlFunc={this.handleSelect} />
+					controlFunc={this.handleIsEnabledToggle} />
 				<Select
 					name='triggerTypeSelected'
-					placeholder={'Choose the type of trigger'}
+					placeholder={this.placeHolderText.triggerTypeSelected}
 					title={'Trigger within the number of days?'}
 					controlFunc={this.handleSelect}
 					options={this.state.triggerTypes}
 					selectedOption={this.props.triggerTypeSelected}
-					text={this.props.triggerTypes}
-					errorText={this.errorFor("triggerTypeSelected")}
-					showError={this.state.showErrors}
+					errorText={this.errorFor('triggerTypeSelected')}
+					showError={this.state.showErrors && this.props.isEnabled}
 				/>
 				<Select
 					label={'Trigger direction'}
 					name='triggerDirectionSelected'
-					placeholder={'Choose the trigger direction'}
+					placeholder={this.placeHolderText.triggerDirectionSelected}
 					controlFunc={this.handleSelect}
 					options={this.state.directions}
-					selectedOption={this.props.triggerDirectionSelected} />
+					selectedOption={this.props.triggerDirectionSelected}
+					errorText={this.errorFor('triggerDirectionSelected')}
+					showError={this.state.showErrors && this.props.isEnabled}/>
 				<SingleInput
 					inputType={'number'}
 					title={'Trigger within the number of days?'}
 					name='triggerWithinDaysInput'
 					controlFunc={this.handleSelect}
 					content={this.props.triggerWithinDaysInput}
-					placeholder={'Enter number of days before triggered'} />
-
+					placeholder={this.placeHolderText.triggerWithinDaysInput}
+					errorText={this.errorFor('triggerWithinDaysInput')}
+					showError={this.state.showErrors && this.props.isEnabled}/>
 				<input
 					type='submit'
 					className='btn btn-primary float-right'
 					value='Submit'/>
                 <button
                     className='btn btn-link float-left'
-                    onClick={this.handleClearForm}>Clear form</button>
+                    onClick={this.handleClearForm}>Clear</button>
 			</form>
 		);
 	}

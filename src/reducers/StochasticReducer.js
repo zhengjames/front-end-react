@@ -15,7 +15,10 @@ export default function reducer(state = {
             var newState = {...state,
                 screenerSubtypeSelected: action.payload.screenerSubtypeSelected,
                 triggerTypeSelected: action.payload.triggerTypeSelected,
-                triggerDirectionSelected: action.payload.triggerDirectionSelected};
+                triggerDirectionSelected: action.payload.triggerDirectionSelected,
+                showErrors: action.payload.showErrors,
+                validationErrors: action.payload.validationErrors
+            };
             return newState;
 
         case 'STOCHASTIC_TOGGLE_ON_OFF':

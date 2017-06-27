@@ -29,8 +29,12 @@ export const minLengthPrint = length => {
     return (fieldName) => `${fieldName} must be at least ${length} characters`;
 };
 
+export const mustBeNumberPrint = fieldName => {
+    return (fieldName) => `${fieldName} must be a number`
+}
+
 export const required = (text) => {
-    if (text != 'Choose the type of trigger' && text != '' && null != text) {
+    if (text != '' && null != text) {
         return null;
     } else {
         return isRequiredPrint;
@@ -46,5 +50,11 @@ export const mustMatch = (field, fieldName) => {
 export const minLength = (length) => {
     return (text) => {
         return text.length >= length ? null : minLengthPrint(length);
+    };
+};
+
+export const mustBeNumber = (text) => {
+    return (text) => {
+        isNan(text) ? mustBeNumberPrint : null;
     };
 };

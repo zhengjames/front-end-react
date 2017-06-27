@@ -6,7 +6,9 @@ export default function reducer(state = {
         isValid: false,
         triggerTypeSelected: '',
         triggerDirectionSelected: '',
-        triggerWithinDaysInput: ''
+        triggerWithinDaysInput: '',
+        showErrors: false,
+        validationErrors: {}
 }, action) {
     switch(action.type) {
         case "MACD_UPDATE_ALL":
@@ -14,7 +16,9 @@ export default function reducer(state = {
                 isValid:action.payload.isValid,
                 triggerTypeSelected: action.payload.triggerTypeSelected,
                 triggerDirectionSelected: action.payload.triggerDirectionSelected,
-                triggerWithinDaysInput: action.payload.triggerWithinDaysInput
+                triggerWithinDaysInput: action.payload.triggerWithinDaysInput,
+                showErrors: action.payload.showErrors,
+                validationErrors: action.payload.validationErrors
             };
             return newState;
         case 'MACD_TOGGLE_ON_OFF':
