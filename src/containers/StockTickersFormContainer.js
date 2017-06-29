@@ -40,7 +40,7 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 		var tickerStr = e.target.value;
         var isValid = false;
         //make sure input is csv valid like TSEM, or AZN, BMY
-        if (tickerStr.match(/^([a-z]+\s*(\s*,\s*[a-z]+\s*)*|[a-z]+\s*(\s*,\s*[a-z]+\s*)*,)$/)) {
+        if (tickerStr.match(/^([a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*|[a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*,)$/)) {
         	isValid = true;
 		}
         console.log('isValid: ', isValid);

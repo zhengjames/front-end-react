@@ -145,6 +145,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 				<input
 					type='submit'
 					className='btn btn-primary float-right'
+					onClick={this.handleFormSubmit}
 					value='Submit'/>
                 <button
                     className='btn btn-link float-left'

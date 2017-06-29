@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import OptionallyDisplayed from './OptionallyDisplayed'
 
 
-class SingleInput extends React.Component {
+class DisplayableSingleInput extends React.Component {
     constructor(props) {
         super(props);
         this.shouldDisplayError = this.shouldDisplayError.bind(this);
@@ -33,17 +33,17 @@ class SingleInput extends React.Component {
     };
 }
 
-SingleInput.propTypes = {
-	inputType: PropTypes.oneOf(['number', 'text']).isRequired,
-	title: PropTypes.string.isRequired,
-	name: PropTypes.string.isRequired,
-	controlFunc: PropTypes.func.isRequired,
-	content: PropTypes.oneOfType([
-		PropTypes.string,
-		PropTypes.number,
-	]).isRequired,
-	placeholder: PropTypes.string,
+DisplayableSingleInput.propTypes = {
+    inputType: PropTypes.oneOf(['number', 'text']).isRequired,
+    title: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    controlFunc: PropTypes.func.isRequired,
+    content: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]).isRequired,
+    placeholder: PropTypes.string,
 
 };
 
-export default SingleInput;
+export default DisplayableSingleInput;

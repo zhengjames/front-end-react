@@ -30,8 +30,12 @@ export const minLengthPrint = length => {
 };
 
 export const mustBeNumberPrint = fieldName => {
-    return (fieldName) => `${fieldName} must be a number`
-}
+    return (fieldName) => `${fieldName} must be a number`;
+};
+
+export const mustBeBetween0and100 = fieldName =>
+    `${fieldName} must be between 0 and 100`;
+
 
 export const required = (text) => {
     if (text != '' && null != text) {
@@ -57,4 +61,8 @@ export const mustBeNumber = (text) => {
     return (text) => {
         isNan(text) ? mustBeNumberPrint : null;
     };
+};
+
+export const between0and100 = (text) => {
+        return (parseInt(text) < 0 || parseInt(text) > 100) ? mustBeBetween0and100 : null;
 };

@@ -9,14 +9,8 @@ import ScreenerToggle from '../components/ScreenerToggle'
 import ScreenerFormContainer from './ScreenerFormContainer'
 import {connect} from 'react-redux'
 import {updateStochastic} from '../actions/stockTickersAction'
-import {run, ruleRunner, required, mustMatch, minLength} from '../validation/ruleRunner.js'
-
-
-const fieldValidations = [
-    ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
-    ruleRunner("triggerDirectionSelected", "Trigger direction", required),
-    ruleRunner("triggerTypeSelected", "Trigger type selected", required)
-];
+import {run, ruleRunner, required, mustMatch, minLength, between0and100} from '../validation/ruleRunner.js'
+import DisplayableSingleInput from "../components/DisplayableSingleInput";
 
 @connect( (store) => {
     return {
@@ -31,9 +25,12 @@ class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
 		this.fieldValidations = [
-            ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
-            ruleRunner("triggerDirectionSelected", "Trigger direction", required),
-            ruleRunner("triggerTypeSelected", "Trigger type selected", required)
+            // ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
+            // ruleRunner("triggerDirectionSelected", "Trigger direction", required),
+            // ruleRunner("triggerTypeSelected", "Trigger type selected", required),
+            ruleRunner("triggerLowerBound", "Lower Bound", required, between0and100),
+            ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100)
+
         ];
         this.varToDescMap = {};
 		this.state = {
@@ -49,10 +46,16 @@ class StochasticFormContainer extends ScreenerFormContainer {
             formContainerClassName : this.props.isEnabled ?
                 this.formContainerEnabledClassName : this.formContainerDisabledClassName,
             showErrors: false,
-            validationErrors: {}
+			triggerBound: '',
+			triggerUpperBound: '',
+			triggerLowerBound: '',
+            validationErrors: {},
+			triggerDirectionIsBetween: false
+
 		};
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
+        this.shouldDisplayTwoBounds = this.shouldDisplayTwoBounds(this);
         this.placeHolderText = {
             'screenerSubtypeSelected' : 'Choose the type of stochastic screener',
 			'triggerTypeSelected' : 'Choose cause of trigger',
@@ -98,6 +101,10 @@ class StochasticFormContainer extends ScreenerFormContainer {
         this.props.dispatch(updateStochastic(payload))
     }
 
+    shouldDisplayTwoBounds() {
+		return this.state.triggerDirectionSelected == 'BETWEEN';
+	}
+
 	handleClearForm(e) {
 		e.preventDefault();
 		this.setState({
@@ -114,7 +121,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
         e.preventDefault();
         //if enabled then show error
         this.setState({showErrors: this.props.isEnabled});
-        var validationError = run(this.state, fieldValidations);
+        var validationError = run(this.state, this.fieldValidations);
         this.setState({validationErrors: validationError});
     }
 
@@ -155,14 +162,48 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					errorText={this.errorFor('triggerDirectionSelected')}
 					showError={this.state.showErrors}
 				/>
+				<DisplayableSingleInput
+					title={'Enter bound, 0 to 100'}
+					inputType={'number'}
+					name={'triggerBound'}
+					controlFunc={this.handleSelect}
+					content={this.state.triggerBound}
+					showError={this.state.showErrors}
+					display={this.state.triggerDirectionSelected == 'ABOVE'
+					|| this.state.triggerDirectionSelected == 'BELOW'}
+					errorText={(this.state.triggerDirectionSelected == 'ABOVE'
+                    || this.state.triggerDirectionSelected == 'BELOW') ?
+						this.errorFor('triggerBound') : null }
+				/>
+				<DisplayableSingleInput
+					title={'Enter lower bound 0 to 100'}
+					inputType={'number'}
+					name={'triggerLowerBound'}
+					controlFunc={this.handleSelect}
+					content={this.state.triggerLowerBound}
+					showError={this.state.showErrors}
+					display={this.state.triggerDirectionSelected == 'BETWEEN'}
+					errorText={(this.state.triggerDirectionSelected == 'BETWEEN') ?
+						this.errorFor('triggerLowerBound') : null}
 
-                {/*<SingleInput*/}
-					{/*title={'Number of days before trigger'}*/}
-					{/*inputType={'number'}*/}
-					{/*name={'triggerWithinDays'}*/}
-					{/*controlFunc={this.handleTriggerWithinDaysChange}*/}
-					{/*content={this.state.triggerWithinDaysSelected}*/}
-					{/*placeholder={'Enter number of days before triggered'} />*/}
+				/>
+                <DisplayableSingleInput
+					title={'Enter upper bound 0 to 100'}
+					inputType={'number'}
+					name={'triggerUpperBound'}
+					controlFunc={this.handleSelect}
+					content={this.state.triggerUpperBound}
+					showError={this.state.showErrors}
+					display={this.state.triggerDirectionSelected == 'BETWEEN'}
+					errorText={this.state.triggerDirectionSelected == 'BETWEEN' ?
+						this.errorFor('triggerUpperBound') : null}
+
+				/>
+				<input
+					type='submit'
+					className='btn btn-primary float-right'
+					onClick={this.handleFormSubmit}
+					value='Submit'/>
 
                 <button
                     className="btn btn-link float-left"
