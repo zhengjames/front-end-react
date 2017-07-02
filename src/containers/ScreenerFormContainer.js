@@ -10,6 +10,7 @@ class ScreenerFormContainer extends Component {
         this.handleFormClassName = this.handleFormClassName.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
         this.errorFor = this.errorFor.bind(this);
+        this.generateRequestJson = this.generateRequestJson.bind(this);
         this.formContainerEnabledClassName = "container enabled_screener_form_container";
         this.formContainerDisabledClassName = "container disabled_screener_form_container";
 
@@ -55,6 +56,8 @@ class ScreenerFormContainer extends Component {
             this.state.formContainerClassName = this.formContainerDisabledClassName;
         }
     }
+
+    generateRequestJson(){};
 }
 
 export default ScreenerFormContainer;

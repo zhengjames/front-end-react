@@ -14,8 +14,7 @@ class SingleInput extends React.Component {
     }
 
     render() {
-        return (this.props.display === true) ?
-			<div className="form-group">
+			return <div className="form-group">
 				<label className="form-label">{this.props.title}</label>
 				<input
 					className="form-input"
@@ -29,7 +28,7 @@ class SingleInput extends React.Component {
 						<span className="text">{this.props.errorText}</span>
 					</div>
 				</OptionallyDisplayed>
-			</div> : null;
+			</div>
     };
 }
 

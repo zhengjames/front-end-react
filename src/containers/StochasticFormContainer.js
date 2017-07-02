@@ -1,7 +1,4 @@
 import React, {Component} from 'react';
-import CheckboxOrRadioGroup from '../components/CheckboxOrRadioGroup';
-import SingleInput from '../components/SingleInput';
-import TextArea from '../components/TextArea';
 import Select from '../components/Select';
 import '../react-toggle.css'
 import request from 'superagent'
@@ -11,6 +8,8 @@ import {connect} from 'react-redux'
 import {updateStochastic} from '../actions/stockTickersAction'
 import {run, ruleRunner, required, mustMatch, minLength, between0and100} from '../validation/ruleRunner.js'
 import DisplayableSingleInput from "../components/DisplayableSingleInput";
+import logger from 'react-logger';
+
 
 @connect( (store) => {
     return {
@@ -18,22 +17,26 @@ import DisplayableSingleInput from "../components/DisplayableSingleInput";
 		screenerSubtypeSelected: store.stochastic.screenerSubtypeSelected,
         triggerTypeSelected: store.stochastic.triggerTypeSelected,
         triggerDirectionSelected: store.stochastic.triggerDirectionSelected,
-        triggerWithinDaysSelected: store.stochastic.triggerWithinDaysSelected
+        triggerWithinDaysSelected: store.stochastic.triggerWithinDaysSelected,
+		triggerTarget: store.stochastic.triggerTarget,
+		triggerLowerBound: store.stochastic.triggerLowerBound,
+		triggerUpperBound: store.stochastic.triggerUpperBound
     }
 })
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
 		this.fieldValidations = [
-            // ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
-            // ruleRunner("triggerDirectionSelected", "Trigger direction", required),
-            // ruleRunner("triggerTypeSelected", "Trigger type selected", required),
+            ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
+            ruleRunner("triggerDirectionSelected", "Trigger direction", required),
+            ruleRunner("triggerTypeSelected", "Trigger type selected", required),
             ruleRunner("triggerLowerBound", "Lower Bound", required, between0and100),
             ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100)
 
         ];
         this.varToDescMap = {};
 		this.state = {
+			//feature is currently off
 			isPredictiveScreening: null,
 			screenerSubtypes: [],
 			screenerSubtypeSelected: this.props.screenerSubtypeSelected,
@@ -46,14 +49,15 @@ class StochasticFormContainer extends ScreenerFormContainer {
             formContainerClassName : this.props.isEnabled ?
                 this.formContainerEnabledClassName : this.formContainerDisabledClassName,
             showErrors: false,
-			triggerBound: '',
-			triggerUpperBound: '',
-			triggerLowerBound: '',
-            validationErrors: {},
-			triggerDirectionIsBetween: false
+			//flags wether upper and lower bound should be displayed both at once
+            triggerDirectionIsBetween: false,
+			triggerTarget: this.props.triggerTarget,
+			triggerUpperBound: this.props.triggerUpperBound,
+			triggerLowerBound: this.props.triggerLowerBound,
 
+			//when user enters wrong input this will contain errors
+            validationErrors: {},
 		};
-        this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
         this.shouldDisplayTwoBounds = this.shouldDisplayTwoBounds(this);
         this.placeHolderText = {
@@ -63,7 +67,8 @@ class StochasticFormContainer extends ScreenerFormContainer {
 		};
 	}
 	componentDidMount() {
-		fetch('../resource/data/stochastic_rsi.json')
+        //setup the drop down options to be displayed
+        fetch('../resource/data/stochastic_rsi.json')
 			.then(res => res.json())
 			.then(data => {
 				this.variables = data.variables;
@@ -78,20 +83,25 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					directions: this.variables.directions,
 					// //days until triggered?
 					triggerWithinDays: this.variables.triggerWithinDays,
-					triggerWithinDaysSelected: this.variables.triggerWithinDays[0],
-					// //is it on predict mode?
-					predictiveScreeningSelected: this.variables.isPredictiveScreening
+
+					// //is it on predict mode? feature currently OFF
+					predictiveScreeningSelected: this.variables.isPredictiveScreening,
+                    triggerWithinDaysSelected: this.variables.triggerWithinDays[0],
 				});
 
             });
 	}
 
+	//will be called by parent
     createUpdatePayloadAndDispatch() {
         var payload = {
         	isEnabled: this.state.isEnabled,
             screenerSubtypeSelected: this.state.screenerSubtypeSelected,
             triggerTypeSelected: this.state.triggerTypeSelected,
             triggerDirectionSelected: this.state.triggerDirectionSelected,
+			triggerUpperBound : this.state.triggerUpperBound,
+			triggerLowerBound : this.state.triggerLowerBound,
+			triggerTarget : this.state.triggerTarget,
 			validationErrors: this.state.validationErrors,
 			showErrors: this.state.showErrors
         };
@@ -116,14 +126,6 @@ class StochasticFormContainer extends ScreenerFormContainer {
 
 		}, () => this.createUpdatePayloadAndDispatch());
 	}
-
-    handleFormSubmit(e) {
-        e.preventDefault();
-        //if enabled then show error
-        this.setState({showErrors: this.props.isEnabled});
-        var validationError = run(this.state, this.fieldValidations);
-        this.setState({validationErrors: validationError});
-    }
 
 	render() {
 		return (
@@ -165,15 +167,15 @@ class StochasticFormContainer extends ScreenerFormContainer {
 				<DisplayableSingleInput
 					title={'Enter bound, 0 to 100'}
 					inputType={'number'}
-					name={'triggerBound'}
+					name={'triggerTarget'}
 					controlFunc={this.handleSelect}
-					content={this.state.triggerBound}
+					content={this.state.triggerTarget}
 					showError={this.state.showErrors}
 					display={this.state.triggerDirectionSelected == 'ABOVE'
 					|| this.state.triggerDirectionSelected == 'BELOW'}
 					errorText={(this.state.triggerDirectionSelected == 'ABOVE'
                     || this.state.triggerDirectionSelected == 'BELOW') ?
-						this.errorFor('triggerBound') : null }
+						this.errorFor('triggerTarget') : null }
 				/>
 				<DisplayableSingleInput
 					title={'Enter lower bound 0 to 100'}
@@ -199,17 +201,30 @@ class StochasticFormContainer extends ScreenerFormContainer {
 						this.errorFor('triggerUpperBound') : null}
 
 				/>
-				<input
-					type='submit'
-					className='btn btn-primary float-right'
-					onClick={this.handleFormSubmit}
-					value='Submit'/>
 
                 <button
                     className="btn btn-link float-left"
                     onClick={this.handleClearForm}>Clear</button>
 			</form>
 		);
+	}
+
+	generateRequestJson() {
+		var jsonRequest = {
+            __type__: 'STOCHASTIC_OSCILLATOR',
+            __subtype__: this.state.screenerSubtypeSelected,
+            trigger_cause: this.state.triggerTypeSelected
+        }
+		if (this.state.triggerDirectionIsBetween) {
+            jsonRequest['upper_bound'] = this.state.triggerUpperBound;
+            jsonRequest['lower_bound'] = this.state.triggerLowerBound;
+        } else {
+			jsonRequest['trigger_target'] = this.state.triggerTarget;
+		}
+		jsonRequest['trigger_direction'] = this.state.triggerDirectionSelected;
+
+		logger.log('StochasticFormContainer created json request', jsonRequest);
+		return jsonRequest;
 	}
 }
 

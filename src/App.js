@@ -8,19 +8,24 @@ import StockTickersFormContainer from './containers/StockTickersFormContainer.js
 import {updateTickers, updateMacdToggleOnOff, updateStochasticToggleOnOff} from "./actions/stockTickersAction"
 import {connect} from "react-redux"
 import {Button, Glyphicon} from 'react-bootstrap'
+import logger from 'react-logger'
+import RequestBuilder from './util/RequestBuilder'
 require('./styles.css');
 @connect((store) => {
     return {
         tickerString: store.ticker.tickerString,
         isValidTicker: store.ticker.isValid,
-        isEnabledMacd: store.macd.isEnabled
+        isEnabledMacd: store.macd.isEnabled,
+        macdStore: store.macd,
+        stochasticStore : store.stochastic,
+        tickerStore: store.ticker
     }
 })
 class App extends Component {
 
     constructor(props) {
         super(props);
-
+        this.macdTab;
         this.enabledLabelClasses = ["react-tabs__tab", "screener-tab_is_enabled"];
         this.disabledLabelClasses = ["react-tabs__tab", "screener-tab_is_disabled"];
         this.unsatisfLabelClasses = ["react-tabs__tab", "screener-tab_is_unsatisfied"];
@@ -39,6 +44,7 @@ class App extends Component {
         this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
         this.handleStochasticStatusOnToggle = this.handleStochasticStatusOnToggle.bind(this);
         this.handleTickerStatusOnToggle = this.handleTickerStatusOnToggle.bind(this);
+        this.submitRequest = this.submitRequest.bind(this);
     }
 
     render() {
@@ -54,7 +60,8 @@ class App extends Component {
                         <Tab className={this.state.macdTabClassNames}>MACD</Tab>
                         <Tab className={this.state.stochasticTabClassNames}>Stochastic RSI</Tab>
                         <Tab className={this.state.tickersTabClassNames}> Stock Tickers</Tab>
-                        <li className="react-tabs__tab" id="submit_button">Submit<Glyphicon glyph="chevron-right" /></li>
+                        <li className="react-tabs__tab" id="submit_button" onClick={this.submitRequest}>
+                            Submit<Glyphicon glyph="chevron-right" /></li>
                     </TabList>
                     <TabPanel>
                         <div id="macd_tab_content">
@@ -115,6 +122,17 @@ class App extends Component {
         //update store
         this.props.dispatch(updateTickers({"isValid": payload.isValid,
             "tickerString": payload.tickerString}));
+    }
+
+    submitRequest() {
+        var completedRequest = {
+            tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore),
+            screener_arr: [
+                RequestBuilder.buildMacdRequest(this.props.macdStore),
+                RequestBuilder.buildStochasticReqeust(this.props.stochasticStore)
+            ]
+        }
+        logger.log('completed request is ', completedRequest);
     }
 }
 

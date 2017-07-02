@@ -7,7 +7,10 @@ export default function reducer(state = {
     isValid: false,
     screenerSubtypeSelected: '',
     triggerTypeSelected: '',
-    triggerDirectionSelected: ''
+    triggerDirectionSelected: '',
+    triggerUpperBound: '',
+    triggerLowerBound: '',
+    triggerTarget: ''
 }, action) {
 
     switch (action.type) {
@@ -16,6 +19,9 @@ export default function reducer(state = {
                 screenerSubtypeSelected: action.payload.screenerSubtypeSelected,
                 triggerTypeSelected: action.payload.triggerTypeSelected,
                 triggerDirectionSelected: action.payload.triggerDirectionSelected,
+                triggerUpperBound : action.payload.triggerUpperBound,
+                triggerLowerBound : action.payload.triggerLowerBound,
+                triggerTarget : action.payload.triggerTarget,
                 showErrors: action.payload.showErrors,
                 validationErrors: action.payload.validationErrors
             };

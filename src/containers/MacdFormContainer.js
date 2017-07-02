@@ -1,15 +1,11 @@
 import React, {Component} from 'react';
-import CheckboxOrRadioGroup from '../components/CheckboxOrRadioGroup';
 import SingleInput from '../components/SingleInput';
-import TextArea from '../components/TextArea';
 import Select from '../components/Select';
 import ScreenerToggle from '../components/ScreenerToggle'
-import request from 'superagent'
-import Toggle from 'react-toggle'
+
 import ScreenerFormContainer from './ScreenerFormContainer';
 import { connect } from 'react-redux'
 import {updateMacd} from '../actions/stockTickersAction'
-import update from 'immutability-helper'
 import logger from 'react-logger'
 import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from '../validation/ruleRunner.js'
 
@@ -51,7 +47,6 @@ class MacdFormContainer extends ScreenerFormContainer {
 			'triggerWithinDaysInput' : 'Enter number of days before triggered'
 		};
 
-		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 		this.handleClearForm = this.handleClearForm.bind(this);
 	}
 
@@ -97,14 +92,6 @@ class MacdFormContainer extends ScreenerFormContainer {
 		}, () => this.createUpdatePayloadAndDispatch());
 	}
 
-	handleFormSubmit(e) {
-        e.preventDefault();
-        //if enabled then show error
-		this.setState({showErrors: this.props.isEnabled});
-		var validationError = run(this.state, this.fieldValidations);
-		this.setState({validationErrors: validationError});
-    }
-
 	render() {
 		return (
 			<form className={this.state.formContainerClassName} onSubmit={this.handleFormSubmit}>
@@ -142,16 +129,23 @@ class MacdFormContainer extends ScreenerFormContainer {
 					placeholder={this.placeHolderText.triggerWithinDaysInput}
 					errorText={this.errorFor('triggerWithinDaysInput')}
 					showError={this.state.showErrors && this.props.isEnabled}/>
-				<input
-					type='submit'
-					className='btn btn-primary float-right'
-					onClick={this.handleFormSubmit}
-					value='Submit'/>
                 <button
                     className='btn btn-link float-left'
                     onClick={this.handleClearForm}>Clear</button>
 			</form>
 		);
+	}
+
+    generateRequestJson() {
+        var jsonRequest = {
+            __type__: 'MACD_SCREENER',
+        trigger_cause : this.state.triggerTypeSelected,
+        trigger_direction : this.state.triggerDirectionSelected,
+        trigger_in_n_days : this.state.triggerWithinDaysInput
+    };
+
+        logger.log('MACDFormContainer return json request ', jsonRequest);
+    	return jsonRequest;
 	}
 }
 

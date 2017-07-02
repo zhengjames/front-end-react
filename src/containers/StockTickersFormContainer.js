@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
-import CheckboxOrRadioGroup from '../components/CheckboxOrRadioGroup';
-import SingleInput from '../components/SingleInput';
 import TextArea from '../components/TextArea';
-import Select from '../components/Select';
-import request from 'superagent'
-import Toggle from 'react-toggle'
+
 import ScreenerFormContainer from './ScreenerFormContainer'
 import {connect} from 'react-redux'
+import {updateTickers} from '../actions/stockTickersAction'
+import logger from 'react-logger'
+
 
 @connect( (store) => {
     return {
@@ -19,12 +18,13 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 		super(props);
 		this.formContainerDisabledClassName = "container unsatisfied_screener_form_container";
         this.handleFormClassName = this.handleFormClassName.bind(this);
-        console.log("constructor of stockTickerFormContainer tickerString is" + this.props.tickerString)
+        console.log("constructor of stockTickerFormContainer tickerString is" + this.props.tickerString);
 		this.state = {
-			formContainerClassName: ''
+			formContainerClassName: '',
 		};
         this.handleTextInput = this.handleTextInput.bind(this);
         this.handleFormClassName = this.handleFormClassName.bind(this);
+        this.createUpdatePayloadAndDispatch = this.createUpdatePayloadAndDispatch.bind(this);
 	}
 
     componentDidMount() {
@@ -42,12 +42,21 @@ class StockTickersFormContainer extends ScreenerFormContainer {
         //make sure input is csv valid like TSEM, or AZN, BMY
         if (tickerStr.match(/^([a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*|[a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*,)$/)) {
         	isValid = true;
-		}
+        }
         console.log('isValid: ', isValid);
 		//call parent class to update ticker information and if is of valid format
 		this.props.handleIsEnabledToggle({"isValid": isValid,
 		"tickerString": e.target.value});
+        this.createUpdatePayloadAndDispatch(tickerStr, isValid);
 		this.handleFormClassName(isValid);
+	}
+
+    createUpdatePayloadAndDispatch(validTickerString, isValid) {
+		var payload = {
+			tickerString : validTickerString,
+			isValid: isValid
+		};
+		this.props.dispatch(updateTickers(payload));
 	}
 
 	handleClearForm(e) {
@@ -81,6 +90,14 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 				/>
 			</form>
 		);
+	}
+
+	generateRequestJson() {
+		var jsonRequest = {
+			tickers_arr :  this.props.tickerString.split(',')
+		};
+		logger.log('StickTickersFormContainer created json request', jsonRequest);
+		return jsonRequest;
 	}
 }
 
