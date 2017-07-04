@@ -25,7 +25,6 @@ class App extends Component {
 
     constructor(props) {
         super(props);
-        this.macdTab;
         this.enabledLabelClasses = ["react-tabs__tab", "screener-tab_is_enabled"];
         this.disabledLabelClasses = ["react-tabs__tab", "screener-tab_is_disabled"];
         this.unsatisfLabelClasses = ["react-tabs__tab", "screener-tab_is_unsatisfied"];
@@ -126,13 +125,20 @@ class App extends Component {
 
     submitRequest() {
         var completedRequest = {
-            tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore),
-            screener_arr: [
-                RequestBuilder.buildMacdRequest(this.props.macdStore),
-                RequestBuilder.buildStochasticReqeust(this.props.stochasticStore)
-            ]
+            tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore)
+        };
+        var screener_arr = [];
+        if (this.props.macdStore.isEnabled) {
+            screener_arr =  screener_arr.concat(RequestBuilder.buildMacdRequest(this.props.macdStore))
         }
+        if (this.props.stochasticStore.isEnabled) {
+            screener_arr = screener_arr.concat(RequestBuilder.buildStochasticRequest(this.props.stochasticStore))
+        }
+        completedRequest['screener_arr'] = screener_arr;
+
         logger.log('completed request is ', completedRequest);
+        console.log('completed request is ', JSON.stringify(completedRequest));
+
     }
 }
 

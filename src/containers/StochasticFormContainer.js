@@ -25,6 +25,7 @@ import logger from 'react-logger';
 })
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
+		logger.log('constructing StochasticFormContainer');
 		super(props);
 		this.fieldValidations = [
             ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),

@@ -20,6 +20,7 @@ import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from '../
 
 class MacdFormContainer extends ScreenerFormContainer {
 	constructor(props) {
+		logger.log('constructing MacdFormContainer');
 		super(props);
         this.fieldValidations = [
             ruleRunner("triggerTypeSelected", "triggerType", required),
