@@ -43,7 +43,7 @@ class App extends Component {
             stochasticTabClassNames: this.enabledLabelClasses,
 
             tickersTabClassNames: (this.props.isValidTicker == true) ?
-                this.enabledLabelClasses : this.unsatisfLabelClasses,
+                this.enabledLabelClasses : this.unsatisfLabelClasses
         };
 
         this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
@@ -155,16 +155,26 @@ class App extends Component {
         var newMacdValidationErrors = {validationErrors:
             run(this.props.macdStore, this.props.macdStore.fieldValidations),
             //after clicking submit, it will show error
-            showErrors: true};
+            showErrors: this.props.macdStore.isEnabled};
 
-        this.props.dispatch(updateMacdErrorValidation(newMacdValidationErrors));
+        //merge current prop and new validation
+        this.setState(
+            Object.assign(
+                {macdTabClassNames: this.retrieveCurrentTabClass(
+                    newMacdValidationErrors, this.state.macdTabClassNames)}),
+                () => this.props.dispatch(updateMacdErrorValidation(newMacdValidationErrors))
+        );
 
         var newStochasticValidationErrors = {validationErrors:
             run(this.props.stochasticStore, this.props.stochasticStore.fieldValidations),
             //after clicking submit, it will show error
-            showErrors: true};
+            showErrors: this.props.stochasticStore.isEnabled};
 
-        this.props.dispatch(updateStochasticErrorValidation(newStochasticValidationErrors));
+        this.setState(
+            Object.assign(
+                {stochasticTabClassNames: this.retrieveCurrentTabClass(
+                    newStochasticValidationErrors, this.state.stochasticTabClassNames)}),
+            () => this.props.dispatch(updateStochasticErrorValidation(newStochasticValidationErrors)));
 
         var newTickerValidationErrors = {validationErrors:
             run(this.props.tickerStore, this.props.tickerStore.fieldValidations),
@@ -172,6 +182,16 @@ class App extends Component {
             showErrors: true};
 
         this.props.dispatch(updateTickerErrorValidation(newTickerValidationErrors));
+    }
+
+    retrieveCurrentTabClass(prop, currentClass) {
+        if (!prop.showErrors) {
+            return this.disabledLabelClasses;
+        } else if (prop.showErrors && Object.keys(prop.validationErrors).length > 0) {
+            return this.unsatisfLabelClasses;
+        } else {
+            return this.enabledLabelClasses;
+        }
     }
 }
 

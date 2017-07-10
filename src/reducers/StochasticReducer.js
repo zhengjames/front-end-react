@@ -18,7 +18,8 @@ export default function reducer(state = {
         ruleRunner("triggerDirectionSelected", "Trigger direction", required),
         ruleRunner("triggerTypeSelected", "Trigger type selected", required),
         ruleRunner("triggerLowerBound", "Lower Bound", required, between0and100),
-        ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100)],
+        ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100),
+        ruleRunner("triggerTarget", "Trigger Bound", required, between0and100)],
     validationErrors: '',
 
 }, action) {
