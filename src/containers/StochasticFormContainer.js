@@ -13,6 +13,7 @@ import logger from 'react-logger';
 
 @connect( (store) => {
     return {
+    	myStore: store.stochastic,
         isEnabled: store.stochastic.isEnabled,
 		screenerSubtypeSelected: store.stochastic.screenerSubtypeSelected,
         triggerTypeSelected: store.stochastic.triggerTypeSelected,
@@ -20,44 +21,27 @@ import logger from 'react-logger';
         triggerWithinDaysSelected: store.stochastic.triggerWithinDaysSelected,
 		triggerTarget: store.stochastic.triggerTarget,
 		triggerLowerBound: store.stochastic.triggerLowerBound,
-		triggerUpperBound: store.stochastic.triggerUpperBound
+		triggerUpperBound: store.stochastic.triggerUpperBound,
+		validationErrors: store.stochastic.validationErrors,
+		showErrors: store.stochastic.showErrors
     }
 })
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		logger.log('constructing StochasticFormContainer');
 		super(props);
-		this.fieldValidations = [
-            ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
-            ruleRunner("triggerDirectionSelected", "Trigger direction", required),
-            ruleRunner("triggerTypeSelected", "Trigger type selected", required),
-            ruleRunner("triggerLowerBound", "Lower Bound", required, between0and100),
-            ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100)
 
-        ];
         this.varToDescMap = {};
 		this.state = {
 			//feature is currently off
 			isPredictiveScreening: null,
 			screenerSubtypes: [],
-			screenerSubtypeSelected: this.props.screenerSubtypeSelected,
             triggerTypes: [],
-            triggerTypeSelected: this.props.triggerTypeSelected,
 			directions: [],
-			triggerDirectionSelected: this.props.triggerDirectionSelected,
 			triggerWithinDays: [],
-			triggerWithinDaysSelected: '',
             formContainerClassName : this.props.isEnabled ?
                 this.formContainerEnabledClassName : this.formContainerDisabledClassName,
-            showErrors: false,
 			//flags wether upper and lower bound should be displayed both at once
-            triggerDirectionIsBetween: false,
-			triggerTarget: this.props.triggerTarget,
-			triggerUpperBound: this.props.triggerUpperBound,
-			triggerLowerBound: this.props.triggerLowerBound,
-
-			//when user enters wrong input this will contain errors
-            validationErrors: {},
 		};
         this.handleClearForm = this.handleClearForm.bind(this);
         this.shouldDisplayTwoBounds = this.shouldDisplayTwoBounds(this);
@@ -94,21 +78,8 @@ class StochasticFormContainer extends ScreenerFormContainer {
 	}
 
 	//will be called by parent
-    createUpdatePayloadAndDispatch() {
-        var payload = {
-        	isEnabled: this.state.isEnabled,
-            screenerSubtypeSelected: this.state.screenerSubtypeSelected,
-            triggerTypeSelected: this.state.triggerTypeSelected,
-            triggerDirectionSelected: this.state.triggerDirectionSelected,
-			triggerUpperBound : this.state.triggerUpperBound,
-			triggerLowerBound : this.state.triggerLowerBound,
-			triggerTarget : this.state.triggerTarget,
-			validationErrors: this.state.validationErrors,
-			showErrors: this.state.showErrors
-        };
-
+    createUpdatePayloadAndDispatch(payload) {
         console.log("stochastic new payload to be dispatch ", payload);
-
         this.props.dispatch(updateStochastic(payload))
     }
 
@@ -118,14 +89,14 @@ class StochasticFormContainer extends ScreenerFormContainer {
 
 	handleClearForm(e) {
 		e.preventDefault();
-		this.setState({
+		var newProps = {
 			screenerSubtypeSelected: '',
 			triggerdirectionSelected: '',
 			triggerTypeSelected: '',
 			triggerWithinDaysSelected: '',
 			predictiveScreeningSelected: ''
-
-		}, () => this.createUpdatePayloadAndDispatch());
+		};
+		this.createUpdatePayloadAndDispatch(newProps);
 	}
 
 	render() {
@@ -143,7 +114,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					controlFunc={this.handleSelect}
 					selectedOption={this.props.screenerSubtypeSelected}
 					errorText={this.errorFor('screenerSubtypeSelected')}
-					showError={this.state.showErrors && this.props.isEnabled}
+					showError={this.props.showErrors && this.props.isEnabled}
 
 				/>
 				<Select
@@ -153,7 +124,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					options={this.state.triggerTypes}
 					selectedOption={this.props.triggerTypeSelected}
 					errorText={this.errorFor('triggerTypeSelected')}
-					showError={this.state.showErrors}
+					showError={this.props.showErrors}
 				/>
 
                 <Select
@@ -163,19 +134,19 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					options={this.state.directions}
 					selectedOption={this.props.triggerDirectionSelected}
 					errorText={this.errorFor('triggerDirectionSelected')}
-					showError={this.state.showErrors}
+					showError={this.props.showErrors}
 				/>
 				<DisplayableSingleInput
 					title={'Enter bound, 0 to 100'}
 					inputType={'number'}
 					name={'triggerTarget'}
 					controlFunc={this.handleSelect}
-					content={this.state.triggerTarget}
-					showError={this.state.showErrors}
-					display={this.state.triggerDirectionSelected == 'ABOVE'
-					|| this.state.triggerDirectionSelected == 'BELOW'}
-					errorText={(this.state.triggerDirectionSelected == 'ABOVE'
-                    || this.state.triggerDirectionSelected == 'BELOW') ?
+					content={this.props.triggerTarget}
+					showError={this.props.showErrors}
+					display={this.props.triggerDirectionSelected == 'ABOVE'
+					|| this.props.triggerDirectionSelected == 'BELOW'}
+					errorText={(this.props.triggerDirectionSelected == 'ABOVE'
+                    || this.props.triggerDirectionSelected == 'BELOW') ?
 						this.errorFor('triggerTarget') : null }
 				/>
 				<DisplayableSingleInput
@@ -183,10 +154,10 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					inputType={'number'}
 					name={'triggerLowerBound'}
 					controlFunc={this.handleSelect}
-					content={this.state.triggerLowerBound}
-					showError={this.state.showErrors}
-					display={this.state.triggerDirectionSelected == 'BETWEEN'}
-					errorText={(this.state.triggerDirectionSelected == 'BETWEEN') ?
+					content={this.props.triggerLowerBound}
+					showError={this.props.showErrors}
+					display={this.props.triggerDirectionSelected == 'BETWEEN'}
+					errorText={(this.props.triggerDirectionSelected == 'BETWEEN') ?
 						this.errorFor('triggerLowerBound') : null}
 
 				/>
@@ -195,10 +166,10 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					inputType={'number'}
 					name={'triggerUpperBound'}
 					controlFunc={this.handleSelect}
-					content={this.state.triggerUpperBound}
-					showError={this.state.showErrors}
-					display={this.state.triggerDirectionSelected == 'BETWEEN'}
-					errorText={this.state.triggerDirectionSelected == 'BETWEEN' ?
+					content={this.props.triggerUpperBound}
+					showError={this.props.showErrors}
+					display={this.props.triggerDirectionSelected == 'BETWEEN'}
+					errorText={this.props.triggerDirectionSelected == 'BETWEEN' ?
 						this.errorFor('triggerUpperBound') : null}
 
 				/>

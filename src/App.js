@@ -5,11 +5,17 @@ import 'react-tabs/style/react-tabs.css'
 import MacdFormContainer from './containers/MacdFormContainer'
 import StochasticFormContainer from './containers/StochasticFormContainer.js'
 import StockTickersFormContainer from './containers/StockTickersFormContainer.js'
-import {updateTickers, updateMacdToggleOnOff, updateStochasticToggleOnOff} from "./actions/stockTickersAction"
+import {
+    updateTickers, updateMacdToggleOnOff, updateStochasticToggleOnOff,
+    updateTickerErrorValidation
+} from "./actions/stockTickersAction"
 import {connect} from "react-redux"
 import {Button, Glyphicon} from 'react-bootstrap'
 import logger from 'react-logger'
 import RequestBuilder from './util/RequestBuilder'
+import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from './validation/ruleRunner.js'
+import {updateMacdErrorValidation, updateStochasticErrorValidation} from './actions/stockTickersAction'
+
 require('./styles.css');
 @connect((store) => {
     return {
@@ -18,7 +24,7 @@ require('./styles.css');
         isEnabledMacd: store.macd.isEnabled,
         macdStore: store.macd,
         stochasticStore : store.stochastic,
-        tickerStore: store.ticker
+        tickerStore: store.ticker,
     }
 })
 class App extends Component {
@@ -124,6 +130,10 @@ class App extends Component {
     }
 
     submitRequest() {
+
+        //show error if needed
+        this.validateActiveTabs();
+
         var completedRequest = {
             tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore)
         };
@@ -139,6 +149,29 @@ class App extends Component {
         logger.log('completed request is ', completedRequest);
         console.log('completed request is ', JSON.stringify(completedRequest));
 
+    }
+
+    validateActiveTabs() {
+        var newMacdValidationErrors = {validationErrors:
+            run(this.props.macdStore, this.props.macdStore.fieldValidations),
+            //after clicking submit, it will show error
+            showErrors: true};
+
+        this.props.dispatch(updateMacdErrorValidation(newMacdValidationErrors));
+
+        var newStochasticValidationErrors = {validationErrors:
+            run(this.props.stochasticStore, this.props.stochasticStore.fieldValidations),
+            //after clicking submit, it will show error
+            showErrors: true};
+
+        this.props.dispatch(updateStochasticErrorValidation(newStochasticValidationErrors));
+
+        var newTickerValidationErrors = {validationErrors:
+            run(this.props.tickerStore, this.props.tickerStore.fieldValidations),
+            //after clicking submit, it will show error
+            showErrors: true};
+
+        this.props.dispatch(updateTickerErrorValidation(newTickerValidationErrors));
     }
 }
 

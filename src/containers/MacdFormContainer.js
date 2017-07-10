@@ -5,16 +5,21 @@ import ScreenerToggle from '../components/ScreenerToggle'
 
 import ScreenerFormContainer from './ScreenerFormContainer';
 import { connect } from 'react-redux'
-import {updateMacd} from '../actions/stockTickersAction'
+import {updateMacd, updateMacdErrorValidation} from '../actions/stockTickersAction'
 import logger from 'react-logger'
 import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from '../validation/ruleRunner.js'
 
+
 @connect( (store) => {
 	return {
+		myStore: store.macd,
 		isEnabled: store.macd.isEnabled,
 		triggerTypeSelected: store.macd.triggerTypeSelected,
 		triggerDirectionSelected: store.macd.triggerDirectionSelected,
-		triggerWithinDaysInput: store.macd.triggerWithinDaysInput
+		triggerWithinDaysInput: store.macd.triggerWithinDaysInput,
+		showErrors: store.macd.showErrors,
+		validationErrors: store.macd.validationErrors
+
 	}
 })
 
@@ -22,24 +27,15 @@ class MacdFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		logger.log('constructing MacdFormContainer');
 		super(props);
-        this.fieldValidations = [
-            ruleRunner("triggerTypeSelected", "triggerType", required),
-            ruleRunner("triggerDirectionSelected", "triggerDirection", required),
-            ruleRunner("triggerWithinDaysInput", "triggerWithinDays", required)
-        ];
 		this.varToDescMap = {};
 		this.state = {
 			triggerTypes: [],
-			triggerTypeSelected: this.props.triggerTypeSelected,
 			directions: [],
 			tickers: '',
 			tickersArr:[],
-			triggerDirectionSelected: this.props.triggerDirectionSelected,
-			triggerWithinDaysInput: this.props.triggerWithinDaysInput,
 			triggerWithinDays: '',
 			formContainerClassName : this.props.isEnabled ?
 				this.formContainerEnabledClassName : this.formContainerDisabledClassName,
-			showErrors: false,
 			validationErrors: {}
 		};
 		this.placeHolderText = {
@@ -67,19 +63,16 @@ class MacdFormContainer extends ScreenerFormContainer {
 	}
 
 	//setup payload of current states and update all at once in store
-	createUpdatePayloadAndDispatch() {
-		var payload = {
-            isEnabled: this.state.isEnabled,
-            triggerTypeSelected: this.state.triggerTypeSelected,
-            triggerDirectionSelected: this.state.triggerDirectionSelected,
-            triggerWithinDaysInput: this.state.triggerWithinDaysInput,
-            validationErrors: this.state.validationErrors,
-            showErrors: this.state.showErrors
-		};
-
+	createUpdatePayloadAndDispatch(payload) {
 		logger.log('macd new payload to be dispatch ', payload);
 
 		this.props.dispatch(updateMacd(payload));
+
+        var newMacdValidationErrors = {validationErrors:
+            run(payload, this.props.myStore.fieldValidations),
+			showErrors: this.props.showErrors};
+
+        this.props.dispatch(updateMacdErrorValidation(newMacdValidationErrors))
 	}
 
 	handleClearForm(e) {
@@ -109,8 +102,8 @@ class MacdFormContainer extends ScreenerFormContainer {
 					controlFunc={this.handleSelect}
 					options={this.state.triggerTypes}
 					selectedOption={this.props.triggerTypeSelected}
-					errorText={this.errorFor('triggerTypeSelected')}
-					showError={this.state.showErrors && this.props.isEnabled}
+					errorText={this.props.validationErrors.triggerTypeSelected}
+					showError={this.props.showErrors && this.props.isEnabled}
 				/>
 				<Select
 					label={'Trigger direction'}
@@ -120,7 +113,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 					options={this.state.directions}
 					selectedOption={this.props.triggerDirectionSelected}
 					errorText={this.errorFor('triggerDirectionSelected')}
-					showError={this.state.showErrors && this.props.isEnabled}/>
+					showError={this.props.showErrors && this.props.isEnabled}/>
 				<SingleInput
 					inputType={'number'}
 					title={'Trigger within the number of days?'}
@@ -129,7 +122,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 					content={this.props.triggerWithinDaysInput}
 					placeholder={this.placeHolderText.triggerWithinDaysInput}
 					errorText={this.errorFor('triggerWithinDaysInput')}
-					showError={this.state.showErrors && this.props.isEnabled}/>
+					showError={this.props.showErrors && this.props.isEnabled}/>
                 <button
                     className='btn btn-link float-left'
                     onClick={this.handleClearForm}>Clear</button>
@@ -140,9 +133,9 @@ class MacdFormContainer extends ScreenerFormContainer {
     generateRequestJson() {
         var jsonRequest = {
             __type__: 'MACD_SCREENER',
-        trigger_cause : this.state.triggerTypeSelected,
-        trigger_direction : this.state.triggerDirectionSelected,
-        trigger_in_n_days : this.state.triggerWithinDaysInput
+        trigger_cause : this.props.triggerTypeSelected,
+        trigger_direction : this.props.triggerDirectionSelected,
+        trigger_in_n_days : this.props.triggerWithinDaysInput
     };
 
         logger.log('MACDFormContainer return json request ', jsonRequest);

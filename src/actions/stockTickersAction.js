@@ -11,10 +11,26 @@ export function updateTickers(payload) {
     }
 }
 
+export function updateTickerErrorValidation(payload) {
+    console.log("calling updateTickerErrorValidation");
+    return {
+        type: 'TICKER_VALIDATION_ERROR',
+        payload: payload
+    }
+}
+
 export function updateMacd(payload) {
     console.log("calling updateMacd");
     return {
         type : 'MACD_UPDATE_ALL',
+        payload: payload
+    }
+}
+
+export function updateMacdErrorValidation(payload) {
+    console.log("calling updateMacdErrorValidation");
+    return {
+        type: 'MACD_VALIDATION_ERROR',
         payload: payload
     }
 }
@@ -39,6 +55,14 @@ export function updateStochasticToggleOnOff(payload) {
     console.log("calling stochasticToggleOnOff", payload);
     return {
         type : 'STOCHASTIC_TOGGLE_ON_OFF',
+        payload: payload
+    }
+}
+
+export function updateStochasticErrorValidation(payload) {
+    console.log("calling updateStochasticErrorValidation")
+    return {
+        type: 'STOCHASTIC_VALIDATION_ERROR',
         payload: payload
     }
 }

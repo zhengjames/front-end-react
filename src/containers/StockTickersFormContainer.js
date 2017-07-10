@@ -5,12 +5,16 @@ import ScreenerFormContainer from './ScreenerFormContainer'
 import {connect} from 'react-redux'
 import {updateTickers} from '../actions/stockTickersAction'
 import logger from 'react-logger'
+import OptionallyDisplayed from '../components/OptionallyDisplayed'
+
 
 
 @connect( (store) => {
     return {
         isValid: store.ticker.isValid,
         tickerString: store.ticker.tickerString,
+		showErrors: store.ticker.showErrors,
+		errorText: store.ticker.errorText
     }
 })
 class StockTickersFormContainer extends ScreenerFormContainer {
@@ -66,7 +70,7 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 	}
 
     handleFormClassName(isValid) {
-		console.log("is valid is ", isValid)
+		console.log("is valid is ", isValid);
         if (isValid) {
             this.state.formContainerClassName = this.formContainerEnabledClassName;
         } else {
@@ -88,6 +92,11 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 					placeholder={'AMZ, APPl, NVDA...'}
 					content={this.props.tickerString}
 				/>
+				<OptionallyDisplayed display={this.props.showErrors && !this.props.isValid}>
+					<div className="validation-error">
+						<span className="text">{this.props.errorText}</span>
+					</div>
+				</OptionallyDisplayed>
 			</form>
 		);
 	}

@@ -1,6 +1,9 @@
 /**
  * Created by jzheng on 6/17/17.
  */
+
+import {ruleRunner, required} from '../validation/ruleRunner.js'
+
 export default function reducer(state = {
         isEnabled: true,
         isValid: false,
@@ -8,7 +11,12 @@ export default function reducer(state = {
         triggerDirectionSelected: '',
         triggerWithinDaysInput: '',
         showErrors: false,
-        validationErrors: {}
+        validationErrors: {},
+        fieldValidations: [
+            ruleRunner("triggerTypeSelected", "triggerType", required),
+            ruleRunner("triggerDirectionSelected", "triggerDirection", required),
+            ruleRunner("triggerWithinDaysInput", "triggerWithinDays", required)
+        ]
 }, action) {
     switch(action.type) {
         case "MACD_UPDATE_ALL":
@@ -25,7 +33,11 @@ export default function reducer(state = {
             console.log("new state is ", {...state, isEnabled:action.payload});
             return {...state, isEnabled:action.payload};
 
-
+        case 'MACD_VALIDATION_ERROR':
+            console.log("new state for VALIDATION_ERROR is", {...state, validationErrors:action.payload,
+            showErrors: true});
+            return {...state, validationErrors: action.payload.validationErrors,
+                showErrors: action.payload.showErrors};
     }
 
     return state;

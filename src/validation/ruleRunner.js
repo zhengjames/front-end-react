@@ -33,6 +33,10 @@ export const mustBeNumberPrint = fieldName => {
     return (fieldName) => `${fieldName} must be a number`;
 };
 
+export const mustBeCsvPrint = fieldName => {
+    return 'invalid csv format'
+};
+
 export const mustBeBetween0and100 = fieldName =>
     `${fieldName} must be between 0 and 100`;
 
@@ -61,6 +65,13 @@ export const mustBeNumber = (text) => {
     return (text) => {
         isNan(text) ? mustBeNumberPrint : null;
     };
+};
+
+export const mustBeCsv = (text) => {
+    return (text) => {
+        return text.match(/^([a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*|[a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*,)$/) ?
+            null : mustBeCsvPrint();
+    }
 };
 
 export const between0and100 = (text) => {

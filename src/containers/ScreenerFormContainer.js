@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import update from 'immutability-helper'
 import {run, ruleRunner, required, mustMatch, minLength} from '../validation/ruleRunner.js'
 
-
 class ScreenerFormContainer extends Component {
     constructor(props) {
         super(props);
@@ -27,18 +26,15 @@ class ScreenerFormContainer extends Component {
         if(targetValue == this.placeHolderText[targetName]) {
             targetValue = '';
         }
-        var newState = update(this.state, {
+        var newState = update(this.props, {
             [targetName] : {$set: targetValue}
         });
-        this.setState(newState,
-            () => {
-                this.createUpdatePayloadAndDispatch();
-                this.state.validationErrors = run(this.state, this.fieldValidations);
-            });
+
+        this.createUpdatePayloadAndDispatch(newState);
     }
 
     errorFor(field) {
-        return this.state.validationErrors[field] || "";
+        return this.props.validationErrors[field] || "";
     }
 
     //calls parent class function
