@@ -30,7 +30,7 @@ class ScreenerFormContainer extends Component {
             [targetName] : {$set: targetValue}
         });
 
-        this.createUpdatePayloadAndDispatch({[targetName]:targetValue});
+        this.createUpdatePayloadAndDispatch(newState);
     }
 
     errorFor(field) {

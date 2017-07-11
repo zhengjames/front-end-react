@@ -34,7 +34,7 @@ export const mustBeNumberPrint = fieldName => {
 };
 
 export const mustBeCsvPrint = fieldName => {
-    return 'invalid csv format'
+    return (fieldName) => `invalid csv format`;
 };
 
 export const mustBeBetween0and100 = fieldName =>
@@ -68,10 +68,9 @@ export const mustBeNumber = (text) => {
 };
 
 export const mustBeCsv = (text) => {
-    return (text) => {
-        return text.match(/^([a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*|[a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*,)$/) ?
+
+    return text.match(/^([a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*|[a-z0-9A-Z]+\s*(\s*,\s*[a-z0-9A-Z]+\s*)*,)$/) ?
             null : mustBeCsvPrint();
-    }
 };
 
 export const between0and100 = (text) => {

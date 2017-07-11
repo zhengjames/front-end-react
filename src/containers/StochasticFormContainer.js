@@ -5,7 +5,7 @@ import request from 'superagent'
 import ScreenerToggle from '../components/ScreenerToggle'
 import ScreenerFormContainer from './ScreenerFormContainer'
 import {connect} from 'react-redux'
-import {updateStochastic} from '../actions/stockTickersAction'
+import {updateStochastic, updateStochasticErrorValidation} from '../actions/stockTickersAction'
 import {run, ruleRunner, required, mustMatch, minLength, between0and100} from '../validation/ruleRunner.js'
 import DisplayableSingleInput from "../components/DisplayableSingleInput";
 import logger from 'react-logger';
@@ -80,7 +80,13 @@ class StochasticFormContainer extends ScreenerFormContainer {
 	//will be called by parent
     createUpdatePayloadAndDispatch(payload) {
         console.log("stochastic new payload to be dispatch ", payload);
-        this.props.dispatch(updateStochastic(payload))
+        this.props.dispatch(updateStochastic(payload));
+
+        var newStochValidationErrors = {validationErrors:
+            run(payload, this.props.myStore.fieldValidations),
+            showErrors: this.props.showErrors};
+
+        this.props.dispatch(updateStochasticErrorValidation(newStochValidationErrors))
     }
 
     shouldDisplayTwoBounds() {

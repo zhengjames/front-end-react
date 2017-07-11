@@ -28,6 +28,17 @@ export default function reducer(state = {
     switch (action.type) {
         case 'STOCHASTIC_UPDATE_ALL':
             var newState = update(state, {$merge: payload});
+            newState.fieldValidations = [
+                ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
+                ruleRunner("triggerDirectionSelected", "Trigger direction", required),
+                ruleRunner("triggerTypeSelected", "Trigger type selected", required),
+            ];
+            if (newState.triggerDirectionSelected == 'ABOVE' || newState.triggerDirectionSelected == 'BELOW') {
+                newState.fieldValidations.push(ruleRunner("triggerTarget", "Trigger Bound", required, between0and100));
+            } else if (newState.triggerDirectionSelected == 'BETWEEN') {
+                newState.fieldValidations.push(ruleRunner("triggerLowerBound", "Lower Bound", required, between0and100));
+                newState.fieldValidations.push(ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100));
+            }
             return newState;
 
         case 'STOCHASTIC_TOGGLE_ON_OFF':

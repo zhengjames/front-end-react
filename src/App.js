@@ -132,7 +132,11 @@ class App extends Component {
     submitRequest() {
 
         //show error if needed
-        this.validateActiveTabs();
+        var isAllRequiredFormValid = this.validateActiveTabs();
+
+        if (!isAllRequiredFormValid) {
+            return;
+        }
 
         var completedRequest = {
             tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore)
@@ -156,7 +160,6 @@ class App extends Component {
             run(this.props.macdStore, this.props.macdStore.fieldValidations),
             //after clicking submit, it will show error
             showErrors: this.props.macdStore.isEnabled};
-
         //merge current prop and new validation
         this.setState(
             Object.assign(
@@ -182,6 +185,20 @@ class App extends Component {
             showErrors: true};
 
         this.props.dispatch(updateTickerErrorValidation(newTickerValidationErrors));
+
+        //can we send the request?
+        if (    //macd screener is either valid or not being used
+            (Object.keys(newMacdValidationErrors.validationErrors).length == 0 || !newMacdValidationErrors.isEnabled)
+                //stochastic screener is either valid or not being used
+            && (Object.keys(newStochasticValidationErrors.validationErrors).length == 0 || !newStochasticValidationErrors.isEnabled)
+                //we always need some tickers
+            && Object.keys(newTickerValidationErrors.validationErrors).length == 0
+                //at least one screener must be enabled
+            && (newMacdValidationErrors.isEnabled || newStochasticValidationErrors.isEnabled)) {
+            return true;
+        }
+
+        return false;
     }
 
     retrieveCurrentTabClass(prop, currentClass) {
