@@ -3,6 +3,7 @@
  */
 
 import {ruleRunner, required} from '../validation/ruleRunner.js'
+import update from 'immutability-helper'
 
 export default function reducer(state = {
         isEnabled: true,
@@ -18,17 +19,12 @@ export default function reducer(state = {
             ruleRunner("triggerWithinDaysInput", "triggerWithinDays", required)
         ]
 }, action) {
+    var payload = action.payload;
     switch(action.type) {
         case "MACD_UPDATE_ALL":
-            var newState = {...state,
-                isValid:action.payload.isValid,
-                triggerTypeSelected: action.payload.triggerTypeSelected,
-                triggerDirectionSelected: action.payload.triggerDirectionSelected,
-                triggerWithinDaysInput: action.payload.triggerWithinDaysInput,
-                showErrors: action.payload.showErrors,
-                validationErrors: action.payload.validationErrors
-            };
+            var newState = update(state, {$merge: payload});
             return newState;
+
         case 'MACD_TOGGLE_ON_OFF':
             console.log("new state is ", {...state, isEnabled:action.payload});
             return {...state, isEnabled:action.payload};

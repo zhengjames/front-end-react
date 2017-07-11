@@ -30,11 +30,15 @@ class ScreenerFormContainer extends Component {
             [targetName] : {$set: targetValue}
         });
 
-        this.createUpdatePayloadAndDispatch(newState);
+        this.createUpdatePayloadAndDispatch({[targetName]:targetValue});
     }
 
     errorFor(field) {
-        return this.props.validationErrors[field] || "";
+        if (this.props.validationErrors == undefined || field == '' || this.props.validationErrors[field] == undefined) {
+            return "";
+        }
+
+        return this.props.validationErrors[field];
     }
 
     //calls parent class function

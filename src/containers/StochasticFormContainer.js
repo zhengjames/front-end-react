@@ -91,10 +91,13 @@ class StochasticFormContainer extends ScreenerFormContainer {
 		e.preventDefault();
 		var newProps = {
 			screenerSubtypeSelected: '',
-			triggerdirectionSelected: '',
+			triggerDirectionSelected: '',
 			triggerTypeSelected: '',
 			triggerWithinDaysSelected: '',
-			predictiveScreeningSelected: ''
+			predictiveScreeningSelected: '',
+			triggerTarget: '',
+            triggerLowerBound: '',
+            triggerUpperBound: ''
 		};
 		this.createUpdatePayloadAndDispatch(newProps);
 	}
