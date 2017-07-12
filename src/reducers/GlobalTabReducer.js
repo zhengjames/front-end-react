@@ -9,6 +9,7 @@ export default function reducer(state = {
     isValid: false,
     errorText: 'invalid format',
     showErrors: false,
+    validationErrors: '',
     fieldValidations: [
         ruleRunner('tickerString', 'tickers', mustBeCsv)
     ]

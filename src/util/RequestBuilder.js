@@ -12,7 +12,7 @@ class RequestBuilder {
             __type__: 'MACD',
             trigger_cause : macd.triggerTypeSelected,
             trigger_direction : macd.triggerDirectionSelected,
-            trigger_in_n_days : macd.triggerWithinDaysInput
+            trigger_in_n_days : parseInt(macd.triggerWithinDaysInput)
         };
         logger.log('built macdRequest ', jsonRequest);
         return jsonRequest

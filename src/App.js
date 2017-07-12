@@ -65,6 +65,7 @@ class App extends Component {
                         <Tab className={this.state.macdTabClassNames}>MACD</Tab>
                         <Tab className={this.state.stochasticTabClassNames}>Stochastic RSI</Tab>
                         <Tab className={this.state.tickersTabClassNames}> Stock Tickers</Tab>
+                        <Tab > apple stock </Tab>
                         <li className="react-tabs__tab" id="submit_button" onClick={this.submitRequest}>
                             Submit<Glyphicon glyph="chevron-right" /></li>
                     </TabList>
@@ -89,6 +90,8 @@ class App extends Component {
                             tickerString={this.props.tickerString}
                             handleIsEnabledToggle={this.handleTickerStatusOnToggle}/>
                         </div>
+                    </TabPanel>
+                    <TabPanel>
                     </TabPanel>
                 </Tabs>
             </div>
@@ -186,15 +189,17 @@ class App extends Component {
 
         this.props.dispatch(updateTickerErrorValidation(newTickerValidationErrors));
 
+        var isMacdEnabled = this.props.macdStore.isEnabled;
+        var isStochEnabled = this.props.stochasticStore.isEnabled;
         //can we send the request?
         if (    //macd screener is either valid or not being used
-            (Object.keys(newMacdValidationErrors.validationErrors).length == 0 || !newMacdValidationErrors.isEnabled)
+            (Object.keys(newMacdValidationErrors.validationErrors).length == 0 || !isMacdEnabled)
                 //stochastic screener is either valid or not being used
-            && (Object.keys(newStochasticValidationErrors.validationErrors).length == 0 || !newStochasticValidationErrors.isEnabled)
+            && (Object.keys(newStochasticValidationErrors.validationErrors).length == 0 || !isStochEnabled)
                 //we always need some tickers
             && Object.keys(newTickerValidationErrors.validationErrors).length == 0
                 //at least one screener must be enabled
-            && (newMacdValidationErrors.isEnabled || newStochasticValidationErrors.isEnabled)) {
+            && (isMacdEnabled || isStochEnabled)) {
             return true;
         }
 
