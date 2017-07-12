@@ -93,8 +93,10 @@ class MacdFormContainer extends ScreenerFormContainer {
 
 				<ScreenerToggle
 					label='Screener'
-					defaultChecked={this.props.isEnabled}
-					controlFunc={this.handleIsEnabledToggle} />
+					controlFunc={this.handleIsEnabledToggle}
+					checked={this.props.isEnabled}
+				/>
+
 				<Select
 					name='triggerTypeSelected'
 					placeholder={this.placeHolderText.triggerTypeSelected}

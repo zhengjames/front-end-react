@@ -6,20 +6,19 @@ import PropTypes from 'prop-types'
 import Toggle from 'react-toggle'
 
 const ScreenerToggle = (props) => (
+
     <div class="toggle-container">
         <div class="toggle-desc">{props.label}</div>
         <Toggle
-
-            defaultChecked={props.defaultChecked}
-            onChange={props.controlFunc} />
+            onChange={props.controlFunc}
+            checked={props.checked}/>
     </div>
 
 );
 
 ScreenerToggle.propTypes = {
-    defaultChecked: PropTypes.bool.isRequired,
-    
     controlFunc: PropTypes.func.isRequired,
+    checked: PropTypes.bool.isRequired
 };
 
 export default ScreenerToggle;

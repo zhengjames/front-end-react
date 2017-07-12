@@ -36,7 +36,13 @@ class ScreenerFormContainer extends Component {
 
     setDefaultSettings(e) {
         e.preventDefault();
-        this.props.dispatch(updateToDefaultFormSettings(this.constructor.name));
+        var newState = this.props.dispatch(updateToDefaultFormSettings(this.constructor.name));
+        //for now set to true
+        this.props.handleIsEnabledToggle(true);
+        this.handleFormClassName(true);
+
+
+
         //calls parent class function
         // this.handleIsEnabledToggle();
     }
@@ -53,7 +59,7 @@ class ScreenerFormContainer extends Component {
     handleIsEnabledToggle() {
         //on change flips boolean
         this.props.handleIsEnabledToggle(!this.props.isEnabled);
-        console.log("Screener isEnabled is ", this.props.isEnabled);
+        console.log("Screener isEnabled is ", !this.props.isEnabled);
         this.handleFormClassName(!this.props.isEnabled);
     }
 

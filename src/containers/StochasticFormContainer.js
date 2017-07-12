@@ -114,8 +114,9 @@ class StochasticFormContainer extends ScreenerFormContainer {
 				<h5 className="screener_header">Stochastic prediction screener</h5>
 				<ScreenerToggle
 					label="Screener"
-					defaultChecked={this.props.isEnabled}
-					controlFunc={this.handleIsEnabledToggle} />
+					controlFunc={this.handleIsEnabledToggle}
+					checked={this.props.isEnabled}
+				/>
 				<Select
 					name='screenerSubtypeSelected'
 					placeholder={this.placeHolderText.screenerSubtypeSelected}
