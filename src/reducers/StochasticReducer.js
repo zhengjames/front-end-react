@@ -49,8 +49,24 @@ export default function reducer(state = {
                 showErrors: true});
             return {...state, validationErrors: action.payload.validationErrors,
                 showErrors: action.payload.showErrors};
-
+        case 'DEFAULT_STOCHASTIC_SETTING':
+            var defaultPayload = createDefaultStochPayload();
+            var updatedState = update(state, {$merge: defaultPayload});
+            return updatedState;
     }
 
     return state;
+}
+
+export function createDefaultStochPayload() {
+    var payload = {
+        isEnabled: true,
+        screenerSubtypeSelected: 'RSI',
+        triggerTypeSelected: 'SLOW_AND_FAST_MA',
+        triggerDirectionSelected: 'BETWEEN',
+        triggerUpperBound: '20',
+        triggerLowerBound: '0'
+    };
+
+    return payload;
 }

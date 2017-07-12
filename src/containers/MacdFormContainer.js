@@ -5,7 +5,7 @@ import ScreenerToggle from '../components/ScreenerToggle'
 
 import ScreenerFormContainer from './ScreenerFormContainer';
 import { connect } from 'react-redux'
-import {updateMacd, updateMacdErrorValidation} from '../actions/stockTickersAction'
+import {updateMacd, updateMacdErrorValidation, updateToDefaultFormSettings} from '../actions/stockTickersAction'
 import logger from 'react-logger'
 import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from '../validation/ruleRunner.js'
 
@@ -126,6 +126,11 @@ class MacdFormContainer extends ScreenerFormContainer {
                 <button
                     className='btn btn-link float-left'
                     onClick={this.handleClearForm}>Clear</button>
+
+				<button
+					className='btn btn-link float-right'
+					onClick={this.setDefaultSettings}
+				> Default</button>
 			</form>
 		);
 	}

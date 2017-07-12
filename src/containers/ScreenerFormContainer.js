@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import update from 'immutability-helper'
 import {run, ruleRunner, required, mustMatch, minLength} from '../validation/ruleRunner.js'
+import {updateToDefaultFormSettings} from "../actions/stockTickersAction";
 
 class ScreenerFormContainer extends Component {
     constructor(props) {
@@ -10,9 +11,9 @@ class ScreenerFormContainer extends Component {
         this.handleSelect = this.handleSelect.bind(this);
         this.errorFor = this.errorFor.bind(this);
         this.generateRequestJson = this.generateRequestJson.bind(this);
+        this.setDefaultSettings = this.setDefaultSettings.bind(this);
         this.formContainerEnabledClassName = "container enabled_screener_form_container";
         this.formContainerDisabledClassName = "container disabled_screener_form_container";
-
     }
 
     /*
@@ -33,6 +34,13 @@ class ScreenerFormContainer extends Component {
         this.createUpdatePayloadAndDispatch(newState);
     }
 
+    setDefaultSettings(e) {
+        e.preventDefault();
+        this.props.dispatch(updateToDefaultFormSettings(this.constructor.name));
+        //calls parent class function
+        // this.handleIsEnabledToggle();
+    }
+
     errorFor(field) {
         if (this.props.validationErrors == undefined || field == '' || this.props.validationErrors[field] == undefined) {
             return "";
@@ -42,7 +50,7 @@ class ScreenerFormContainer extends Component {
     }
 
     //calls parent class function
-    handleIsEnabledToggle(e) {
+    handleIsEnabledToggle() {
         //on change flips boolean
         this.props.handleIsEnabledToggle(!this.props.isEnabled);
         console.log("Screener isEnabled is ", this.props.isEnabled);

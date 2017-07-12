@@ -60,9 +60,22 @@ export function updateStochasticToggleOnOff(payload) {
 }
 
 export function updateStochasticErrorValidation(payload) {
-    console.log("calling updateStochasticErrorValidation")
+    console.log("calling updateStochasticErrorValidation");
     return {
         type: 'STOCHASTIC_VALIDATION_ERROR',
         payload: payload
+    }
+}
+
+export function updateToDefaultFormSettings(className) {
+    console.log("calling updateToDefaultMacdSettings");
+    switch (className) {
+        case 'MacdFormContainer':
+            return {type:'DEFAULT_MACD_SETTING'};
+        case 'StochasticFormContainer':
+            return {type:'DEFAULT_STOCHASTIC_SETTING'};
+        default:
+            console.log('calling unrecognize className ' + payload);
+            return 'ERROR unrecognize type'
     }
 }

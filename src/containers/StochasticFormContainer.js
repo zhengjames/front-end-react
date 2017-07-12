@@ -180,12 +180,16 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					display={this.props.triggerDirectionSelected == 'BETWEEN'}
 					errorText={this.props.triggerDirectionSelected == 'BETWEEN' ?
 						this.errorFor('triggerUpperBound') : null}
-
 				/>
 
                 <button
                     className="btn btn-link float-left"
                     onClick={this.handleClearForm}>Clear</button>
+
+				<button
+					className='btn btn-link float-right'
+					onClick={this.setDefaultSettings}
+				> Default</button>
 			</form>
 		);
 	}

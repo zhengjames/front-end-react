@@ -5,41 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="./resource/data/favicon.ico">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
-    <!-- TradingView Widget BEGIN -->
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <!-- TradingView Widget END -->
-    <!--
-      Notice the use of %PUBLIC_URL% in the tag above.
-      It will be replaced with the URL of tresourceblic` folder during the build.
-      Only files inside tresourceblic` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favico.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-rresourceblic URL.
-      Learn how to configure a non-rresourceblic URL by running `npm run build`.
-    -->
     <title>React App</title>
   </head>
   <body>
     <div id="root"></div>
-    <script type="text/javascript">
-        new TradingView.widget({
-            "autosize": true,
-            "symbol": "NASDAQ:AAPL",
-            "interval": "D",
-            "timezone": "Etc/UTC",
-            "theme": "White",
-            "style": "1",
-            "locale": "en",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "allow_symbol_change": true,
-            "hideideas": true,
-            "studies": [
-                "MACD@tv-basicstudies",
-                "StochasticRSI@tv-basicstudies"
-            ]
-        });
-    </script>
   </body>
   <script src="client.min.js"></script>
 </html>

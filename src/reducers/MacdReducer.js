@@ -34,8 +34,23 @@ export default function reducer(state = {
             showErrors: true});
             return {...state, validationErrors: action.payload.validationErrors,
                 showErrors: action.payload.showErrors};
+        case 'DEFAULT_MACD_SETTING':
+            var defaultPayload = createDefaultMacdPayload();
+            var updatedState = update(state, {$merge: defaultPayload});
+            return updatedState;
     }
 
     return state;
 
+}
+
+export function createDefaultMacdPayload() {
+    var payload = {
+        isEnabled: true,
+        triggerTypeSelected: 'FAST_SLOW_MA_CROSS',
+        triggerDirectionSelected: 'ABOVE',
+        triggerWithinDaysInput: '10',
+    };
+
+    return payload;
 }

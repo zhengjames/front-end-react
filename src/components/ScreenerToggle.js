@@ -18,7 +18,7 @@ const ScreenerToggle = (props) => (
 
 ScreenerToggle.propTypes = {
     defaultChecked: PropTypes.bool.isRequired,
-
+    
     controlFunc: PropTypes.func.isRequired,
 };
 
