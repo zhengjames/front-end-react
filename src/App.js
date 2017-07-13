@@ -137,9 +137,9 @@ class App extends Component {
         //show error if needed
         var isAllRequiredFormValid = this.validateActiveTabs();
 
-        if (!isAllRequiredFormValid) {
-            return;
-        }
+        // if (!isAllRequiredFormValid) {
+        //     return;
+        // }
 
         var completedRequest = {
             tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore)
@@ -156,10 +156,14 @@ class App extends Component {
         logger.log('completed request is ', completedRequest);
         console.log('completed request is ', JSON.stringify(completedRequest));
 
-        var request = new Request('http://127.0.0.1:8070/', {
+        var request = new Request('http://127.0.0.1:8070/screen', {
             method: 'POST',
             headers: new Headers({
-                'Content-Type': 'text/json',
+                'Content-Type': 'application/json',
+            }),
+            body: JSON.stringify({
+                firstParam: 'yourValue',
+                secondParam: 'yourOtherValue',
             })
         });
 
