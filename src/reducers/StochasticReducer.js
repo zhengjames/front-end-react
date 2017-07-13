@@ -17,10 +17,7 @@ export default function reducer(state = {
     fieldValidations: [
         ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
         ruleRunner("triggerDirectionSelected", "Trigger direction", required),
-        ruleRunner("triggerTypeSelected", "Trigger type selected", required),
-        ruleRunner("triggerLowerBound", "Lower Bound", required, between0and100),
-        ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100),
-        ruleRunner("triggerTarget", "Trigger Bound", required, between0and100)],
+        ruleRunner("triggerTypeSelected", "Trigger type selected", required)],
     validationErrors: '',
 }, action) {
 
@@ -28,17 +25,8 @@ export default function reducer(state = {
     switch (action.type) {
         case 'STOCHASTIC_UPDATE_ALL':
             var newState = update(state, {$merge: payload});
-            newState.fieldValidations = [
-                ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
-                ruleRunner("triggerDirectionSelected", "Trigger direction", required),
-                ruleRunner("triggerTypeSelected", "Trigger type selected", required),
-            ];
-            if (newState.triggerDirectionSelected == 'ABOVE' || newState.triggerDirectionSelected == 'BELOW') {
-                newState.fieldValidations.push(ruleRunner("triggerTarget", "Trigger Bound", required, between0and100));
-            } else if (newState.triggerDirectionSelected == 'BETWEEN') {
-                newState.fieldValidations.push(ruleRunner("triggerLowerBound", "Lower Bound", required, between0and100));
-                newState.fieldValidations.push(ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100));
-            }
+            newState.fieldValidations = fetchRuleRunnerByTriggerDirection(newState.triggerDirectionSelected);
+
             return newState;
 
         case 'STOCHASTIC_TOGGLE_ON_OFF':
@@ -58,6 +46,19 @@ export default function reducer(state = {
     return state;
 }
 
+export function fetchRuleRunnerByTriggerDirection(triggerDirection) {
+    if (triggerDirection == 'ABOVE' || triggerDirection == 'BELOW') {
+        return [ruleRunner("triggerTarget", "Trigger Bound", required, between0and100)];
+    } else if (triggerDirection == 'BETWEEN') {
+        return [
+            ruleRunner("triggerLowerBound", "Lower Bound", required, between0and100),
+            ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100)
+        ];
+    } else {
+        console.log("ERROR WRONG DIRECTION" + triggerDirection)
+    }
+}
+
 export function createDefaultStochPayload() {
     var payload = {
         isEnabled: true,
@@ -65,7 +66,8 @@ export function createDefaultStochPayload() {
         triggerTypeSelected: 'SLOW_AND_FAST_MA',
         triggerDirectionSelected: 'BETWEEN',
         triggerUpperBound: '20',
-        triggerLowerBound: '0'
+        triggerLowerBound: '0',
+        fieldValidations: fetchRuleRunnerByTriggerDirection('BETWEEN')
     };
 
     return payload;
