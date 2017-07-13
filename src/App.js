@@ -156,6 +156,17 @@ class App extends Component {
         logger.log('completed request is ', completedRequest);
         console.log('completed request is ', JSON.stringify(completedRequest));
 
+        var request = new Request('http://127.0.0.1:8070/', {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type': 'text/json',
+            })
+        });
+
+        fetch(request).then(function(response){
+            console.log(response);
+        });
+
     }
 
     validateActiveTabs() {
