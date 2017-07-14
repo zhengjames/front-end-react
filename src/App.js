@@ -15,7 +15,7 @@ import logger from 'react-logger'
 import RequestBuilder from './util/RequestBuilder'
 import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from './validation/ruleRunner.js'
 import {updateMacdErrorValidation, updateStochasticErrorValidation} from './actions/stockTickersAction'
-
+import request from 'superagent'
 require('./styles.css');
 @connect((store) => {
     return {
@@ -50,6 +50,7 @@ class App extends Component {
         this.handleStochasticStatusOnToggle = this.handleStochasticStatusOnToggle.bind(this);
         this.handleTickerStatusOnToggle = this.handleTickerStatusOnToggle.bind(this);
         this.submitRequest = this.submitRequest.bind(this);
+        this.handleResponse = this.handleResponse.bind(this);
     }
 
     render() {
@@ -141,7 +142,7 @@ class App extends Component {
         //     return;
         // }
 
-        var completedRequest = {
+        var screening_request = {
             tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore)
         };
         var screener_arr = [];
@@ -151,26 +152,37 @@ class App extends Component {
         if (this.props.stochasticStore.isEnabled) {
             screener_arr = screener_arr.concat(RequestBuilder.buildStochasticRequest(this.props.stochasticStore))
         }
-        completedRequest['screener_arr'] = screener_arr;
+        screening_request['screener_arr'] = screener_arr;
 
-        logger.log('completed request is ', completedRequest);
-        console.log('completed request is ', JSON.stringify(completedRequest));
+        logger.log('completed request is ', screening_request);
+        console.log('completed request is ', JSON.stringify(screening_request));
 
-        var request = new Request('http://127.0.0.1:8070/screen', {
-            method: 'POST',
-            headers: new Headers({
-                'Content-Type': 'application/json',
-            }),
-            body: JSON.stringify({
-                firstParam: 'yourValue',
-                secondParam: 'yourOtherValue',
-            })
-        });
+        request.post('http://127.0.0.1:8070/screen')
+            .withCredentials()
+            .send(screening_request)
+            .end(this.handleResponse);
 
-        fetch(request).then(function(response){
-            console.log(response);
-        });
+        // var request = new Request('http://127.0.0.1:8070/screen', {
+        //     method: 'POST',
+        //     headers: new Headers({
+        //         'Content-Type': 'application/json',
+        //     }),
+        //     body: JSON.stringify({
+        //         screening_request
+        //     })
+        // });
+        //
+        // fetch(request)
+        //     .then((response) => response.json)
+        //     .then((responseDate, err) => {
+        //         console.log(JSON.stringify(responseDate.body))
+        //     });
 
+
+    }
+
+    handleResponse(error, response) {
+        console.log(response)
     }
 
     validateActiveTabs() {
