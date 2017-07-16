@@ -1,9 +1,13 @@
 /**
  * Created by jzheng on 6/18/17.
  */
-import {ruleRunner, required, between0and100} from '../validation/ruleRunner.js'
+import {run, ruleRunner, required, between0and100} from '../validation/ruleRunner.js'
 import update from 'immutability-helper'
 
+var requiredValidations = [
+    ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
+    ruleRunner("triggerDirectionSelected", "Trigger direction", required),
+    ruleRunner("triggerTypeSelected", "Trigger type selected", required)];
 export default function reducer(state = {
     isEnabled: true,
     isValid: false,
@@ -14,10 +18,7 @@ export default function reducer(state = {
     triggerLowerBound: '',
     triggerTarget: '',
     showErrors: false,
-    fieldValidations: [
-        ruleRunner('screenerSubtypeSelected', 'Screener subtype', required),
-        ruleRunner("triggerDirectionSelected", "Trigger direction", required),
-        ruleRunner("triggerTypeSelected", "Trigger type selected", required)],
+    fieldValidations: requiredValidations,
     validationErrors: '',
 }, action) {
 
@@ -25,7 +26,8 @@ export default function reducer(state = {
     switch (action.type) {
         case 'STOCHASTIC_UPDATE_ALL':
             var newState = update(state, {$merge: payload});
-            newState.fieldValidations = fetchRuleRunnerByTriggerDirection(newState.triggerDirectionSelected);
+            newState.fieldValidations = requiredValidations.concat(fetchRuleRunnerByTriggerDirection(newState.triggerDirectionSelected));
+            newState.validationErrors = run(payload, newState.fieldValidations);
 
             return newState;
 
@@ -55,7 +57,7 @@ export function fetchRuleRunnerByTriggerDirection(triggerDirection) {
             ruleRunner("triggerUpperBound", "Upper Bound", required, between0and100)
         ];
     } else {
-        console.log("ERROR WRONG DIRECTION" + triggerDirection)
+        return []
     }
 }
 

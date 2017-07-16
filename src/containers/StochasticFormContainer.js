@@ -82,11 +82,11 @@ class StochasticFormContainer extends ScreenerFormContainer {
         console.log("stochastic new payload to be dispatch ", payload);
         this.props.dispatch(updateStochastic(payload));
 
-        var newStochValidationErrors = {validationErrors:
-            run(payload, this.props.myStore.fieldValidations),
-            showErrors: this.props.showErrors};
-
-        this.props.dispatch(updateStochasticErrorValidation(newStochValidationErrors))
+        // var newStochValidationErrors = {validationErrors:
+        //     run(payload, this.props.myStore.fieldValidations),
+        //     showErrors: this.props.showErrors};
+        //
+        // this.props.dispatch(updateStochasticErrorValidation(newStochValidationErrors))
     }
 
     shouldDisplayTwoBounds() {
