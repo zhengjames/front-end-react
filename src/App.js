@@ -16,6 +16,10 @@ import RequestBuilder from './util/RequestBuilder'
 import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from './validation/ruleRunner.js'
 import {updateMacdErrorValidation, updateStochasticErrorValidation} from './actions/stockTickersAction'
 import request from 'superagent'
+import ResponseUtil from './util/ResponseUtil'
+import Ticker from './components/Ticker'
+import ResultDisplay from "./components/ResultDisplay";
+
 require('./styles.css');
 @connect((store) => {
     return {
@@ -43,7 +47,10 @@ class App extends Component {
             stochasticTabClassNames: this.enabledLabelClasses,
 
             tickersTabClassNames: (this.props.isValidTicker == true) ?
-                this.enabledLabelClasses : this.unsatisfLabelClasses
+                this.enabledLabelClasses : this.unsatisfLabelClasses,
+            screenedResponse: {},
+            failedScreeningResults: {},
+            passedScreeningResults: {}
         };
 
         this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
@@ -95,6 +102,12 @@ class App extends Component {
                     <TabPanel>
                     </TabPanel>
                 </Tabs>
+
+                <div>
+                    <ResultDisplay
+                        passedScreeningResults={this.state.passedScreeningResults}
+                        failedScreeningResults={this.state.failedScreeningResults} />
+                </div>
             </div>
         );
     }
@@ -182,7 +195,25 @@ class App extends Component {
     }
 
     handleResponse(error, response) {
-        console.log(response)
+        console.log('server response: ', response);
+        this.setState({screenedResponse: response['text']});
+        var responseJson = JSON.parse(response['text']);
+        var passedResult = {};
+        var failedResult = {};
+        Object.keys(responseJson).map((tickerKey) => {
+            if (tickerKey in responseJson &&
+                ResponseUtil.isArrayResultPassed(responseJson[tickerKey])) {
+                passedResult[tickerKey] = responseJson[tickerKey]
+            } else {
+                failedResult[tickerKey] = responseJson[tickerKey]
+            }
+        });
+
+        this.setState({
+            failedScreeningResults: failedResult,
+            passedScreeningResults: passedResult
+        });
+        // for
     }
 
     validateActiveTabs() {
