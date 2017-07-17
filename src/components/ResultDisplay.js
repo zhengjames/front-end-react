@@ -24,8 +24,9 @@ const ResultDisplay = (props) => (
                 <tr key={index}>
                     <td>{index}</td>
                     <td>{tickerKey}</td>
-                    <td>displayableMap</td>
-                    <td></td>
+                    <td>failed</td>
+                    <td>{'MACD' in displayableMap ? displayableMap['MACD']['results'] : 'UNKNOWN'}</td>
+                    <td>{'STOCHASTIC' in displayableMap ? displayableMap['STOCHASTIC']['results'] : 'UNKNOWN'}</td>
                 </tr>
             )
         })

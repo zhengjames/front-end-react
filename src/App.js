@@ -202,7 +202,7 @@ class App extends Component {
         var failedResult = {};
         Object.keys(responseJson).map((tickerKey) => {
             if (tickerKey in responseJson &&
-                ResponseUtil.isArrayResultPassed(responseJson[tickerKey])) {
+                ResponseUtil.isAllResultsPassed(responseJson[tickerKey])) {
                 passedResult[tickerKey] = responseJson[tickerKey]
             } else {
                 failedResult[tickerKey] = responseJson[tickerKey]
