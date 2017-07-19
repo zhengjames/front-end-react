@@ -21,16 +21,8 @@ import Ticker from './components/Ticker'
 import ResultDisplay from "./components/ResultDisplay";
 
 require('./styles.css');
-@connect((store) => {
-    return {
-        tickerString: store.ticker.tickerString,
-        isValidTicker: store.ticker.isValid,
-        isEnabledMacd: store.macd.isEnabled,
-        macdStore: store.macd,
-        stochasticStore : store.stochastic,
-        tickerStore: store.ticker,
-    }
-})
+
+
 class App extends Component {
 
     constructor(props) {
@@ -40,6 +32,7 @@ class App extends Component {
         this.unsatisfLabelClasses = ["react-tabs__tab", "screener-tab_is_unsatisfied"];
         this.state = {
             stochasticEnabled : true,
+            macdEnabled : true,
             //by default use the css that indicates enabled
             macdTabClassNames: (this.props.isEnabledMacd == true) ?
                 this.enabledLabelClasses : this.disabledLabelClasses,
@@ -50,7 +43,8 @@ class App extends Component {
                 this.enabledLabelClasses : this.unsatisfLabelClasses,
             screenedResponse: {},
             failedScreeningResults: {},
-            passedScreeningResults: {}
+            passedScreeningResults: {},
+            shouldDisplayResults: false
         };
 
         this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
@@ -102,12 +96,13 @@ class App extends Component {
                     <TabPanel>
                     </TabPanel>
                 </Tabs>
-
-                <div>
-                    <ResultDisplay
-                        passedScreeningResults={this.state.passedScreeningResults}
-                        failedScreeningResults={this.state.failedScreeningResults} />
-                </div>
+                <ResultDisplay
+                    shouldDisplay={this.state.shouldDisplayResults}
+                    passedScreeningResults={this.state.passedScreeningResults}
+                    failedScreeningResults={this.state.failedScreeningResults}
+                    shouldDisplayMacd={this.state.macdEnabled}
+                    shouldDisplayStochastic={this.state.stochasticEnabled}
+                />
             </div>
         );
     }
@@ -120,6 +115,7 @@ class App extends Component {
         } else {
             this.setState({macdTabClassNames:this.disabledLabelClasses});
         }
+        this.setState({macdEnabled: isEnabled});
     }
 
     handleStochasticStatusOnToggle(isEnabled) {
@@ -129,6 +125,7 @@ class App extends Component {
         } else {
             this.setState({stochasticTabClassNames:this.disabledLabelClasses});
         }
+        this.setState({stochasticEnabled: isEnabled});
     }
 
     handleTickerStatusOnToggle(payload) {
@@ -156,11 +153,11 @@ class App extends Component {
         // }
 
         var screening_request = {
-            tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore)
+            tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore.tickerString)
         };
         var screener_arr = [];
         if (this.props.macdStore.isEnabled) {
-            screener_arr =  screener_arr.concat(RequestBuilder.buildMacdRequest(this.props.macdStore))
+            screener_arr = screener_arr.concat(RequestBuilder.buildMacdRequest(this.props.macdStore))
         }
         if (this.props.stochasticStore.isEnabled) {
             screener_arr = screener_arr.concat(RequestBuilder.buildStochasticRequest(this.props.stochasticStore))
@@ -174,24 +171,6 @@ class App extends Component {
             .withCredentials()
             .send(screening_request)
             .end(this.handleResponse);
-
-        // var request = new Request('http://127.0.0.1:8070/screen', {
-        //     method: 'POST',
-        //     headers: new Headers({
-        //         'Content-Type': 'application/json',
-        //     }),
-        //     body: JSON.stringify({
-        //         screening_request
-        //     })
-        // });
-        //
-        // fetch(request)
-        //     .then((response) => response.json)
-        //     .then((responseDate, err) => {
-        //         console.log(JSON.stringify(responseDate.body))
-        //     });
-
-
     }
 
     handleResponse(error, response) {
@@ -210,6 +189,7 @@ class App extends Component {
         });
 
         this.setState({
+            shouldDisplayResults: true,
             failedScreeningResults: failedResult,
             passedScreeningResults: passedResult
         });
@@ -275,4 +255,13 @@ class App extends Component {
     }
 }
 
-export default App;
+export default connect((store) => {
+    return {
+        tickerString: store.ticker.tickerString,
+        isValidTicker: store.ticker.isValid,
+        isEnabledMacd: store.macd.isEnabled,
+        macdStore: store.macd,
+        stochasticStore : store.stochastic,
+        tickerStore: store.ticker,
+    }
+}) (App)

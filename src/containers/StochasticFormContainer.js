@@ -10,22 +10,6 @@ import {run, ruleRunner, required, mustMatch, minLength, between0and100} from '.
 import DisplayableSingleInput from "../components/DisplayableSingleInput";
 import logger from 'react-logger';
 
-
-@connect( (store) => {
-    return {
-    	myStore: store.stochastic,
-        isEnabled: store.stochastic.isEnabled,
-		screenerSubtypeSelected: store.stochastic.screenerSubtypeSelected,
-        triggerTypeSelected: store.stochastic.triggerTypeSelected,
-        triggerDirectionSelected: store.stochastic.triggerDirectionSelected,
-        triggerWithinDaysSelected: store.stochastic.triggerWithinDaysSelected,
-		triggerTarget: store.stochastic.triggerTarget,
-		triggerLowerBound: store.stochastic.triggerLowerBound,
-		triggerUpperBound: store.stochastic.triggerUpperBound,
-		validationErrors: store.stochastic.validationErrors,
-		showErrors: store.stochastic.showErrors
-    }
-})
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		logger.log('constructing StochasticFormContainer');
@@ -214,4 +198,18 @@ class StochasticFormContainer extends ScreenerFormContainer {
 	}
 }
 
-export default StochasticFormContainer;
+export default connect( (store) => {
+    return {
+        myStore: store.stochastic,
+        isEnabled: store.stochastic.isEnabled,
+        screenerSubtypeSelected: store.stochastic.screenerSubtypeSelected,
+        triggerTypeSelected: store.stochastic.triggerTypeSelected,
+        triggerDirectionSelected: store.stochastic.triggerDirectionSelected,
+        triggerWithinDaysSelected: store.stochastic.triggerWithinDaysSelected,
+        triggerTarget: store.stochastic.triggerTarget,
+        triggerLowerBound: store.stochastic.triggerLowerBound,
+        triggerUpperBound: store.stochastic.triggerUpperBound,
+        validationErrors: store.stochastic.validationErrors,
+        showErrors: store.stochastic.showErrors
+    }
+}) (StochasticFormContainer);

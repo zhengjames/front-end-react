@@ -46,8 +46,9 @@ class RequestBuilder {
     /*
         input ticker store
      */
-    static buildTickerRequest(tickerStore) {
-        var jsonRequest = tickerStore.tickerString.split(',')
+    static buildTickerRequest(tickerString) {
+        tickerString.trim();
+        var jsonRequest = tickerString.split(',');
 
         logger.log('built tickers ', jsonRequest);
         return jsonRequest

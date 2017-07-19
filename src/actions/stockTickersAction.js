@@ -75,7 +75,7 @@ export function updateToDefaultFormSettings(className) {
         case 'StochasticFormContainer':
             return {type:'DEFAULT_STOCHASTIC_SETTING'};
         default:
-            console.log('calling unrecognize className ' + payload);
+            console.log('calling unrecognize className ' + className);
             return 'ERROR unrecognize type'
     }
 }

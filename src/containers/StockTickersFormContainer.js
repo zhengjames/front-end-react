@@ -7,16 +7,6 @@ import {updateTickers} from '../actions/stockTickersAction'
 import logger from 'react-logger'
 import OptionallyDisplayed from '../components/OptionallyDisplayed'
 
-
-
-@connect( (store) => {
-    return {
-        isValid: store.ticker.isValid,
-        tickerString: store.ticker.tickerString,
-		showErrors: store.ticker.showErrors,
-		errorText: store.ticker.errorText
-    }
-})
 class StockTickersFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
@@ -110,4 +100,11 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 	}
 }
 
-export default StockTickersFormContainer;
+export default connect( (store) => {
+    return {
+        isValid: store.ticker.isValid,
+        tickerString: store.ticker.tickerString,
+        showErrors: store.ticker.showErrors,
+        errorText: store.ticker.errorText
+    }
+}) (StockTickersFormContainer);

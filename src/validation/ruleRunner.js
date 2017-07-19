@@ -63,7 +63,7 @@ export const minLength = (length) => {
 
 export const mustBeNumber = (text) => {
     return (text) => {
-        isNan(text) ? mustBeNumberPrint : null;
+        text ? mustBeNumberPrint : null;
     };
 };
 

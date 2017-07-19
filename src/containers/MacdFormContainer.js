@@ -9,20 +9,6 @@ import {updateMacd, updateMacdErrorValidation, updateToDefaultFormSettings} from
 import logger from 'react-logger'
 import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from '../validation/ruleRunner.js'
 
-
-@connect( (store) => {
-	return {
-		myStore: store.macd,
-		isEnabled: store.macd.isEnabled,
-		triggerTypeSelected: store.macd.triggerTypeSelected,
-		triggerDirectionSelected: store.macd.triggerDirectionSelected,
-		triggerWithinDaysInput: store.macd.triggerWithinDaysInput,
-		showErrors: store.macd.showErrors,
-		validationErrors: store.macd.validationErrors
-
-	}
-})
-
 class MacdFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		logger.log('constructing MacdFormContainer');
@@ -150,4 +136,15 @@ class MacdFormContainer extends ScreenerFormContainer {
 	}
 }
 
-export default MacdFormContainer;
+export default connect( (store) => {
+    return {
+        myStore: store.macd,
+        isEnabled: store.macd.isEnabled,
+        triggerTypeSelected: store.macd.triggerTypeSelected,
+        triggerDirectionSelected: store.macd.triggerDirectionSelected,
+        triggerWithinDaysInput: store.macd.triggerWithinDaysInput,
+        showErrors: store.macd.showErrors,
+        validationErrors: store.macd.validationErrors
+
+    }
+}) (MacdFormContainer)

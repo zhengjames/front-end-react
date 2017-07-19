@@ -16,7 +16,7 @@ class ResponseUtil {
     }
 
     /*
-     Do all ticker results in array pass?
+     Do all ticker results in map pass?
      */
     static isAllResultsPassed(result) {
         if (result == null) {
@@ -59,26 +59,22 @@ class ResponseUtil {
      */
     static convertToComprehensiveFormat(ticker, resultsMap) {
         var comprehensiveResponse = {};
-        comprehensiveResponse['ticker'] = ticker != null ? ticker.toUpperCase() : 'UNKNOWN';
+        comprehensiveResponse['TICKER'] = ticker != null ? ticker.toUpperCase() : 'UNKNOWN';
+        comprehensiveResponse['ALL_SCREENER_PASS'] = this.isAllResultsPassed(resultsMap);
         Object.keys(resultsMap).map((screenerNameKey, index) => {
             if (screenerNameKey) {
                 switch (screenerNameKey) {
                     case 'MACD':
                         var macdResults = resultsMap['MACD'];
-                        comprehensiveResponse['MACD'] = {
-                            pass: this.sanitizeVariable(macdResults['pass'], 'Boolean'),
-                            results: `Cross in ${this.sanitizeVariable(macdResults['prediction'], 'Integer')} days`
-                        };
+                        comprehensiveResponse['MACD_PASS'] = this.sanitizeVariable(macdResults['pass'], 'Boolean');
+                        comprehensiveResponse['MACD_PREDICTION'] = this.sanitizeVariable(macdResults['prediction'], 'Integer');
                         break;
                     case 'STOCHASTIC':
                     case 'STOCHASTIC_OSCILLATOR':
                         var stochResults = resultsMap['STOCHASTIC_OSCILLATOR'];
-                        comprehensiveResponse['STOCHASTIC'] = {
-                            pass: this.sanitizeVariable(stochResults['pass'], 'Boolean'),
-                            results:
-                                    `Current fast moving average: ${stochResults['calculated_map']['FAST_MA']} \n
-                                    Current slow moving average: ${stochResults['calculated_map']['SLOW_MA']}`
-                        };
+                        comprehensiveResponse['STOCHASTIC_PASS'] = this.sanitizeVariable(stochResults['pass'], 'Boolean');
+                        comprehensiveResponse['STOCHASTIC_RESULT_FAST_MA'] = stochResults['calculated_map']['FAST_MA'];
+                        comprehensiveResponse['STOCHASTIC_RESULT_SLOW_MA'] = stochResults['calculated_map']['SLOW_MA'];
                         break;
                 }
             }
@@ -95,8 +91,8 @@ class ResponseUtil {
                 return (variable == null) ?
                     (9999) : variable;
             case 'BOOLEAN':
-                return (variable == null) ?
-                    false : true;
+                return (variable == null || (variable != true && variable != false)) ?
+                    false : variable;
 
             case 'STRING':
                 return (variable == null) ?
