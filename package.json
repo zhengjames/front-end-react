@@ -8,7 +8,8 @@
     "css-loader": "^0.28.1",
     "react-scripts": "^1.0.10",
     "style-loader": "^0.17.0",
-    "webpack": "^1.15.0"
+    "webpack": "^2.2.0",
+    "webpack-dev-server": "^2.2.0"
   },
   "dependencies": {
     "airbnb-prop-types": "^2.7.0",
@@ -44,9 +45,7 @@
     "redux-thunk": "^2.2.0",
     "spectre.css": "^0.1.27",
     "style-loader": "^0.13.1",
-    "superagent": "^3.5.2",
-    "webpack": "^1.12.9",
-    "webpack-dev-server": "^1.14.1"
+    "superagent": "^3.5.2"
   },
   "scripts": {
     "start": "react-scripts start",

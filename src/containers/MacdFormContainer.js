@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import {updateMacd, updateMacdErrorValidation, updateToDefaultFormSettings} from '../actions/stockTickersAction'
 import logger from 'react-logger'
 import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from '../validation/ruleRunner.js'
+import dataJson from '../resource/data/macd.json'
 
 class MacdFormContainer extends ScreenerFormContainer {
 	constructor(props) {
@@ -34,19 +35,11 @@ class MacdFormContainer extends ScreenerFormContainer {
 	}
 
 	componentDidMount() {
-		fetch('../resource/data/macd.json')
-			.then(res => res.json())
-			.then(data => {
-				this.variables = data.variables;
-				this.varToDescMap = data.varToDescMap;
-				this.setState({
-					triggerTypes: this.variables.triggerTypes,
-					directions: this.variables.directions,
-				});
-                console.log(this.state.triggerTypes[0]);
-
-            });
-	}
+        this.setState({
+            triggerTypes: dataJson.variables.triggerTypes,
+            directions: dataJson.variables.directions,
+        });
+    }
 
 	//setup payload of current states and update all at once in store
 	createUpdatePayloadAndDispatch(payload) {

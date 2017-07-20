@@ -40,9 +40,6 @@ class ScreenerFormContainer extends Component {
         //for now set to true
         this.props.handleIsEnabledToggle(true);
         this.handleFormClassName(true);
-
-
-
         //calls parent class function
         // this.handleIsEnabledToggle();
     }

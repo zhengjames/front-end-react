@@ -7,8 +7,8 @@ import Toggle from 'react-toggle'
 
 const ScreenerToggle = (props) => (
 
-    <div class="toggle-container">
-        <div class="toggle-desc">{props.label}</div>
+    <div className="toggle-container">
+        <div className="toggle-desc">{props.label}</div>
         <Toggle
             onChange={props.controlFunc}
             checked={props.checked}/>

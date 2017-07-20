@@ -9,6 +9,7 @@ import {updateStochastic, updateStochasticErrorValidation} from '../actions/stoc
 import {run, ruleRunner, required, mustMatch, minLength, between0and100} from '../validation/ruleRunner.js'
 import DisplayableSingleInput from "../components/DisplayableSingleInput";
 import logger from 'react-logger';
+import dataJson from '../resource/data/stochastic_rsi.json'
 
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
@@ -37,40 +38,28 @@ class StochasticFormContainer extends ScreenerFormContainer {
 	}
 	componentDidMount() {
         //setup the drop down options to be displayed
-        fetch('../resource/data/stochastic_rsi.json')
-			.then(res => res.json())
-			.then(data => {
-				this.variables = data.variables;
-				this.varToDescMap = data.varToDescMap;
-				this.setState({
-					//index 0 means default option
-					//RSI or classic stochastic?
-					screenerSubtypes: this.variables.screenerSubtypes,
-					// //fast cross slow?
-                    triggerTypes: this.variables.triggerTypes,
-					// //above, below, between?
-					directions: this.variables.directions,
-					// //days until triggered?
-					triggerWithinDays: this.variables.triggerWithinDays,
+		this.variables = dataJson.variables;
+		this.setState({
+			//index 0 means default option
+			//RSI or classic stochastic?
+			screenerSubtypes: this.variables.screenerSubtypes,
+			// //fast cross slow?
+			triggerTypes: this.variables.triggerTypes,
+			// //above, below, between?
+			directions: this.variables.directions,
+			// //days until triggered?
+			triggerWithinDays: this.variables.triggerWithinDays,
 
-					// //is it on predict mode? feature currently OFF
-					predictiveScreeningSelected: this.variables.isPredictiveScreening,
-                    triggerWithinDaysSelected: this.variables.triggerWithinDays[0],
-				});
-
-            });
+			// //is it on predict mode? feature currently OFF
+			predictiveScreeningSelected: this.variables.isPredictiveScreening,
+			triggerWithinDaysSelected: this.variables.triggerWithinDays[0],
+		});
 	}
 
 	//will be called by parent
     createUpdatePayloadAndDispatch(payload) {
         console.log("stochastic new payload to be dispatch ", payload);
         this.props.dispatch(updateStochastic(payload));
-
-        // var newStochValidationErrors = {validationErrors:
-        //     run(payload, this.props.myStore.fieldValidations),
-        //     showErrors: this.props.showErrors};
-        //
-        // this.props.dispatch(updateStochasticErrorValidation(newStochValidationErrors))
     }
 
     shouldDisplayTwoBounds() {

@@ -57,17 +57,13 @@ class App extends Component {
     render() {
         return (
             <div>
-                <h1>React Tabs</h1>
-                <p>
-                    <a href="https://github.com/reactjs/react-tabs/blob/gh-pages/example/main.js">Demo Source</a>
-                </p>
+                <h1>Predictitive Screening</h1>
 
                 <Tabs>
                     <TabList>
                         <Tab className={this.state.macdTabClassNames}>MACD</Tab>
                         <Tab className={this.state.stochasticTabClassNames}>Stochastic RSI</Tab>
                         <Tab className={this.state.tickersTabClassNames}> Stock Tickers</Tab>
-                        <Tab > apple stock </Tab>
                         <li className="react-tabs__tab" id="submit_button" onClick={this.submitRequest}>
                             Submit<Glyphicon glyph="chevron-right" /></li>
                     </TabList>
