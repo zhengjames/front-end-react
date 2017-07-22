@@ -21,7 +21,7 @@ import Ticker from './components/Ticker'
 import ResultDisplay from "./components/ResultDisplay";
 
 require('./styles.css');
-
+require('./animations.css')
 
 class App extends Component {
 
@@ -44,7 +44,10 @@ class App extends Component {
             screenedResponse: {},
             failedScreeningResults: {},
             passedScreeningResults: {},
-            shouldDisplayResults: false
+            shouldDisplayResults: false,
+            isSubmitting: false,
+            submitButtonText: 'Submit',
+            submitButtonClassName: 'react-tabs__tab'
         };
 
         this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
@@ -52,6 +55,7 @@ class App extends Component {
         this.handleTickerStatusOnToggle = this.handleTickerStatusOnToggle.bind(this);
         this.submitRequest = this.submitRequest.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
+        this.alterSubmittingStatus = this.alterSubmittingStatus.bind(this);
     }
 
     render() {
@@ -64,8 +68,8 @@ class App extends Component {
                         <Tab className={this.state.macdTabClassNames}>MACD</Tab>
                         <Tab className={this.state.stochasticTabClassNames}>Stochastic RSI</Tab>
                         <Tab className={this.state.tickersTabClassNames}> Stock Tickers</Tab>
-                        <li className="react-tabs__tab" id="submit_button" onClick={this.submitRequest}>
-                            Submit<Glyphicon glyph="chevron-right" /></li>
+                        <li className={this.state.submitButtonClassName} id="submit_button" onClick={this.submitRequest}>
+                            {this.state.submitButtonText} <Glyphicon glyph="chevron-right" /></li>
                     </TabList>
                     <TabPanel>
                         <div id="macd_tab_content">
@@ -88,8 +92,6 @@ class App extends Component {
                             tickerString={this.props.tickerString}
                             handleIsEnabledToggle={this.handleTickerStatusOnToggle}/>
                         </div>
-                    </TabPanel>
-                    <TabPanel>
                     </TabPanel>
                 </Tabs>
                 <ResultDisplay
@@ -144,9 +146,9 @@ class App extends Component {
         //show error if needed
         var isAllRequiredFormValid = this.validateActiveTabs();
 
-        // if (!isAllRequiredFormValid) {
-        //     return;
-        // }
+        if (!isAllRequiredFormValid) {
+            return;
+        }
 
         var screening_request = {
             tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore.tickerString)
@@ -162,11 +164,28 @@ class App extends Component {
 
         logger.log('completed request is ', screening_request);
         console.log('completed request is ', JSON.stringify(screening_request));
+        this.setState(this.alterSubmittingStatus(true), () =>
+        {
+            request.post('http://127.0.0.1:8070/screen')
+                .withCredentials()
+                .send(screening_request)
+                .end(this.handleResponse);
+        });
+    }
 
-        request.post('http://127.0.0.1:8070/screen')
-            .withCredentials()
-            .send(screening_request)
-            .end(this.handleResponse);
+    alterSubmittingStatus(status) {
+        //if form is submitting
+        if (status) {
+            return {
+                submitButtonText: 'Submitting...',
+                submitButtonClassName: 'react-tabs__tab blink'
+            }
+        } else {
+            return {
+                submitButtonText: 'Submit',
+                submitButtonClassName: 'react-tabs__tab'
+            }
+        }
     }
 
     handleResponse(error, response) {
@@ -184,12 +203,11 @@ class App extends Component {
             }
         });
 
-        this.setState({
+        this.setState(Object.assign({}, {
             shouldDisplayResults: true,
             failedScreeningResults: failedResult,
             passedScreeningResults: passedResult
-        });
-        // for
+        }, this.alterSubmittingStatus(false)));
     }
 
     validateActiveTabs() {

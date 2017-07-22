@@ -47,7 +47,7 @@ class RequestBuilder {
         input ticker store
      */
     static buildTickerRequest(tickerString) {
-        tickerString.replace(/\s/g,'');
+        tickerString = tickerString.replace(/\s/g,'');
         var jsonRequest = tickerString.split(',');
 
         logger.log('built tickers ', jsonRequest);
