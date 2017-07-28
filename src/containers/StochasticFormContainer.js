@@ -10,6 +10,7 @@ import {run, ruleRunner, required, mustMatch, minLength, between0and100} from '.
 import DisplayableSingleInput from "../components/DisplayableSingleInput";
 import logger from 'react-logger';
 import dataJson from '../resource/data/stochastic_rsi.json'
+import {Link} from 'react-router'
 
 class StochasticFormContainer extends ScreenerFormContainer {
 	constructor(props) {
@@ -164,6 +165,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					className='btn btn-link float-right'
 					onClick={this.setDefaultSettings}
 				> Default</button>
+				<Link to="/archives">archives</Link>
 			</form>
 		);
 	}

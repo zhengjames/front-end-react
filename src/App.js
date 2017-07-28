@@ -10,18 +10,18 @@ import {
     updateTickerErrorValidation
 } from "./actions/stockTickersAction"
 import {connect} from "react-redux"
-import {Button, Glyphicon} from 'react-bootstrap'
+import {Glyphicon} from 'react-bootstrap'
 import logger from 'react-logger'
 import RequestBuilder from './util/RequestBuilder'
-import {run, ruleRunner, required, mustMatch, minLength, mustBeNumber} from './validation/ruleRunner.js'
+import {run} from './validation/ruleRunner.js'
 import {updateMacdErrorValidation, updateStochasticErrorValidation} from './actions/stockTickersAction'
 import request from 'superagent'
 import ResponseUtil from './util/ResponseUtil'
-import Ticker from './components/Ticker'
 import ResultDisplay from "./components/ResultDisplay";
+import {NavLink} from 'react-router-dom'
 
 require('./styles.css');
-require('./animations.css')
+require('./animations.css');
 
 class App extends Component {
 
@@ -55,7 +55,7 @@ class App extends Component {
         this.handleTickerStatusOnToggle = this.handleTickerStatusOnToggle.bind(this);
         this.submitRequest = this.submitRequest.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
-        this.alterSubmittingStatus = this.alterSubmittingStatus.bind(this);
+        this.createStatesBySubmittingStatus = this.createStatesBySubmittingStatus.bind(this);
     }
 
     render() {
@@ -101,7 +101,9 @@ class App extends Component {
                     shouldDisplayMacd={this.state.macdEnabled}
                     shouldDisplayStochastic={this.state.stochasticEnabled}
                 />
+                <NavLink to="/submit"> hello </NavLink>
             </div>
+
         );
     }
 
@@ -144,36 +146,36 @@ class App extends Component {
     submitRequest() {
 
         //show error if needed
-        var isAllRequiredFormValid = this.validateActiveTabs();
-
-        if (!isAllRequiredFormValid) {
-            return;
-        }
-
-        var screening_request = {
-            tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore.tickerString)
-        };
-        var screener_arr = [];
-        if (this.props.macdStore.isEnabled) {
-            screener_arr = screener_arr.concat(RequestBuilder.buildMacdRequest(this.props.macdStore))
-        }
-        if (this.props.stochasticStore.isEnabled) {
-            screener_arr = screener_arr.concat(RequestBuilder.buildStochasticRequest(this.props.stochasticStore))
-        }
-        screening_request['screener_arr'] = screener_arr;
-
-        logger.log('completed request is ', screening_request);
-        console.log('completed request is ', JSON.stringify(screening_request));
-        this.setState(this.alterSubmittingStatus(true), () =>
-        {
-            request.post('http://127.0.0.1:8070/screen')
-                .withCredentials()
-                .send(screening_request)
-                .end(this.handleResponse);
-        });
+        // var isAllRequiredFormValid = this.validateActiveTabs();
+        //
+        // if (!isAllRequiredFormValid) {
+        //     return;
+        // }
+        //
+        // var screening_request = {
+        //     tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore.tickerString)
+        // };
+        // var screener_arr = [];
+        // if (this.props.macdStore.isEnabled) {
+        //     screener_arr = screener_arr.concat(RequestBuilder.buildMacdRequest(this.props.macdStore))
+        // }
+        // if (this.props.stochasticStore.isEnabled) {
+        //     screener_arr = screener_arr.concat(RequestBuilder.buildStochasticRequest(this.props.stochasticStore))
+        // }
+        // screening_request['screener_arr'] = screener_arr;
+        //
+        // logger.log('completed request is ', screening_request);
+        // console.log('completed request is ', JSON.stringify(screening_request));
+        // this.setState(this.createStatesBySubmittingStatus(true), () =>
+        // {
+        //     request.post('http://127.0.0.1:8070/screen')
+        //         .withCredentials()
+        //         .send(screening_request)
+        //         .end(this.handleResponse);
+        // });
     }
 
-    alterSubmittingStatus(status) {
+    createStatesBySubmittingStatus(status) {
         //if form is submitting
         if (status) {
             return {
@@ -207,7 +209,7 @@ class App extends Component {
             shouldDisplayResults: true,
             failedScreeningResults: failedResult,
             passedScreeningResults: passedResult
-        }, this.alterSubmittingStatus(false)));
+        }, this.createStatesBySubmittingStatus(false)));
     }
 
     validateActiveTabs() {
