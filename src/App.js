@@ -21,7 +21,7 @@ import {NavLink} from 'react-router-dom'
 
 require('./styles.css');
 require('./animations.css');
-require('./spectre.min.css')
+require('./spectre.min.css');
 
 class App extends Component {
 
@@ -101,7 +101,6 @@ class App extends Component {
                     shouldDisplayStochastic={this.state.stochasticEnabled}
                 />
             </div>
-
         );
     }
 
