@@ -12,8 +12,8 @@ class ScreenerFormContainer extends Component {
         this.errorFor = this.errorFor.bind(this);
         this.generateRequestJson = this.generateRequestJson.bind(this);
         this.setDefaultSettings = this.setDefaultSettings.bind(this);
-        this.formContainerEnabledClassName = "container enabled_screener_form_container";
-        this.formContainerDisabledClassName = "container disabled_screener_form_container";
+        this.formContainerEnabledClassName = "enabled_screener_form_container";
+        this.formContainerDisabledClassName = "disabled_screener_form_container";
     }
 
     /*

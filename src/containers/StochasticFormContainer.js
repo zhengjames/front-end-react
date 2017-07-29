@@ -165,7 +165,6 @@ class StochasticFormContainer extends ScreenerFormContainer {
 					className='btn btn-link float-right'
 					onClick={this.setDefaultSettings}
 				> Default</button>
-				<Link to="/archives">archives</Link>
 			</form>
 		);
 	}

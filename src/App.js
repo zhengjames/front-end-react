@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import '../node_modules/spectre.css/dist/spectre.min.css'
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs'
 import 'react-tabs/style/react-tabs.css'
 import MacdFormContainer from './containers/MacdFormContainer'
@@ -22,6 +21,7 @@ import {NavLink} from 'react-router-dom'
 
 require('./styles.css');
 require('./animations.css');
+require('./spectre.min.css')
 
 class App extends Component {
 
@@ -75,7 +75,6 @@ class App extends Component {
                         <div id="macd_tab_content">
                             <MacdFormContainer
                                 handleIsEnabledToggle={this.handleMacdStatusOnToggle}
-                                test1={this.state.test}
                             />
                         </div>
                     </TabPanel>
@@ -101,7 +100,6 @@ class App extends Component {
                     shouldDisplayMacd={this.state.macdEnabled}
                     shouldDisplayStochastic={this.state.stochasticEnabled}
                 />
-                <NavLink to="/submit"> hello </NavLink>
             </div>
 
         );
