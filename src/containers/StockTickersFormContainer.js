@@ -10,7 +10,7 @@ import OptionallyDisplayed from '../components/OptionallyDisplayed'
 class StockTickersFormContainer extends ScreenerFormContainer {
 	constructor(props) {
 		super(props);
-		this.formContainerDisabledClassName = "container unsatisfied_screener_form_container";
+		this.formContainerDisabledClassName = "unsatisfied_screener_form_container";
         this.handleFormClassName = this.handleFormClassName.bind(this);
         console.log("constructor of stockTickerFormContainer tickerString is" + this.props.tickerString);
 		this.state = {

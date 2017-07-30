@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Select from '../components/Select';
-import '../react-toggle.css'
+import '../resource/css/react-toggle.css'
 import request from 'superagent'
 import ScreenerToggle from '../components/ScreenerToggle'
 import ScreenerFormContainer from './ScreenerFormContainer'
@@ -157,14 +157,15 @@ class StochasticFormContainer extends ScreenerFormContainer {
 						this.errorFor('triggerUpperBound') : null}
 				/>
 
+				<div>
                 <button
-                    className="btn btn-link float-left"
+                    className="btn btn-link"
                     onClick={this.handleClearForm}>Clear</button>
-
 				<button
 					className='btn btn-link float-right'
 					onClick={this.setDefaultSettings}
 				> Default</button>
+				</div>
 			</form>
 		);
 	}

@@ -19,9 +19,9 @@ import ResponseUtil from './util/ResponseUtil'
 import ResultDisplay from "./components/ResultDisplay";
 import {NavLink} from 'react-router-dom'
 
-require('./styles.css');
-require('./animations.css');
-require('./spectre.min.css');
+require('./resource/css/styles.css');
+require('./resource/css/animations.css');
+require('./resource/css/spectre.min.css');
 
 class App extends Component {
 
@@ -60,6 +60,7 @@ class App extends Component {
 
     render() {
         return (
+            
             <div>
                 <h1>Predictitive Screening</h1>
 

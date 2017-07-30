@@ -105,7 +105,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 					errorText={this.errorFor('triggerWithinDaysInput')}
 					showError={this.props.showErrors && this.props.isEnabled}/>
                 <button
-                    className='btn btn-link float-left'
+                    className='btn btn-link'
                     onClick={this.handleClearForm}>Clear</button>
 
 				<button

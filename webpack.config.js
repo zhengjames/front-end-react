@@ -5,7 +5,7 @@ var path = require('path');
 module.exports = {
     context: path.join(__dirname, "src"),
     devtool: debug ? "source-map" : null,
-    entry: "./index.js",
+    entry: "./RenderApp.js",
     module: {
         loaders: [
             {
