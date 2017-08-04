@@ -17,7 +17,10 @@ import {updateMacdErrorValidation, updateStochasticErrorValidation} from './acti
 import request from 'superagent'
 import ResponseUtil from './util/ResponseUtil'
 import ResultDisplay from "./components/ResultDisplay";
-import {NavLink} from 'react-router-dom'
+import {BrowserRouter, NavLink, Router, Route} from 'react-router-dom'
+import TradingviewChart from './components/TradingviewChart'
+//use for demo ONLY
+import Home from './Home'
 
 require('./resource/css/styles.css');
 require('./resource/css/animations.css');
@@ -47,7 +50,9 @@ class App extends Component {
             shouldDisplayResults: false,
             isSubmitting: false,
             submitButtonText: 'Submit',
-            submitButtonClassName: 'react-tabs__tab'
+            submitButtonClassName: 'react-tabs__tab',
+            formClassName: '',
+            chart: <div></div>
         };
 
         this.handleMacdStatusOnToggle = this.handleMacdStatusOnToggle.bind(this);
@@ -56,13 +61,15 @@ class App extends Component {
         this.submitRequest = this.submitRequest.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
         this.createStatesBySubmittingStatus = this.createStatesBySubmittingStatus.bind(this);
+        this.createChart = this.createChart.bind(this);
     }
 
     render() {
         return (
-            
-            <div>
+            <BrowserRouter>
+            <div className={this.state.formClassName}>
                 <h1>Predictitive Screening</h1>
+                <h2><NavLink to="/tradingview">tradingview</NavLink></h2>
 
                 <Tabs>
                     <TabList>
@@ -101,7 +108,10 @@ class App extends Component {
                     shouldDisplayMacd={this.state.macdEnabled}
                     shouldDisplayStochastic={this.state.stochasticEnabled}
                 />
+
+                <div>{this.state.chart}</div>
             </div>
+            </BrowserRouter>
         );
     }
 
@@ -142,7 +152,7 @@ class App extends Component {
     }
 
     submitRequest() {
-
+        this.createChart("MSFT");
         //show error if needed
         // var isAllRequiredFormValid = this.validateActiveTabs();
         //
@@ -266,6 +276,14 @@ class App extends Component {
         } else {
             return this.enabledLabelClasses;
         }
+    }
+
+    createChart(ticker) {
+        this.setState(
+            {
+                chart: <TradingviewChart ticker={ticker}/>
+            }
+        )
     }
 }
 

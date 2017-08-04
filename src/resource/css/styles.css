@@ -100,3 +100,7 @@ input[type=submit],
     color: #F5B7B1;
     padding: .5rem .8rem;
 }
+
+.no_display {
+    display: none;
+}
