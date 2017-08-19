@@ -2,7 +2,7 @@
  * Created by jzheng on 7/13/17.
  */
 
-import ResultDisplay from "../components/ResultDisplay";
+import ResultDisplay from "../components/ScreeningResultDisplay";
 class ResponseUtil {
     /*
      Does ticker result pass?

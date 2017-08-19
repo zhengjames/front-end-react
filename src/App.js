@@ -16,11 +16,9 @@ import {run} from './validation/ruleRunner.js'
 import {updateMacdErrorValidation, updateStochasticErrorValidation} from './actions/stockTickersAction'
 import request from 'superagent'
 import ResponseUtil from './util/ResponseUtil'
-import ResultDisplay from "./components/ResultDisplay";
+import ScreeningResultDisplay from "./components/ScreeningResultDisplay";
 import {BrowserRouter, NavLink, Router, Route} from 'react-router-dom'
 import TradingviewChart from './components/TradingviewChart'
-//use for demo ONLY
-import Home from './Home'
 
 require('./resource/css/styles.css');
 require('./resource/css/animations.css');
@@ -30,6 +28,9 @@ class App extends Component {
 
     constructor(props) {
         super(props);
+        /**
+         * constants to control css for tabs
+         */
         this.enabledLabelClasses = ["react-tabs__tab", "screener-tab_is_enabled"];
         this.disabledLabelClasses = ["react-tabs__tab", "screener-tab_is_disabled"];
         this.unsatisfLabelClasses = ["react-tabs__tab", "screener-tab_is_unsatisfied"];
@@ -48,6 +49,7 @@ class App extends Component {
             failedScreeningResults: {},
             passedScreeningResults: {},
             shouldDisplayResults: false,
+            responseError: false,
             isSubmitting: false,
             submitButtonText: 'Submit',
             submitButtonClassName: 'react-tabs__tab',
@@ -69,7 +71,7 @@ class App extends Component {
             <BrowserRouter>
             <div className={this.state.formClassName}>
                 <h1>Predictitive Screening</h1>
-                <h2><NavLink to="/tradingview">tradingview</NavLink></h2>
+                {this.state.responseError ? <p>Error please try again</p> : null }
 
                 <Tabs>
                     <TabList>
@@ -101,15 +103,13 @@ class App extends Component {
                         </div>
                     </TabPanel>
                 </Tabs>
-                <ResultDisplay
+                <ScreeningResultDisplay
                     shouldDisplay={this.state.shouldDisplayResults}
                     passedScreeningResults={this.state.passedScreeningResults}
                     failedScreeningResults={this.state.failedScreeningResults}
                     shouldDisplayMacd={this.state.macdEnabled}
                     shouldDisplayStochastic={this.state.stochasticEnabled}
                 />
-
-                <div>{this.state.chart}</div>
             </div>
             </BrowserRouter>
         );
@@ -151,38 +151,49 @@ class App extends Component {
             "tickerString": payload.tickerString}));
     }
 
+    /**
+     * When user presses submit button
+     * 1. collect all user form inputs
+     * 2. create request using inputs
+     * 3. call server and display response
+     */
     submitRequest() {
-        this.createChart("MSFT");
-        //show error if needed
-        // var isAllRequiredFormValid = this.validateActiveTabs();
-        //
-        // if (!isAllRequiredFormValid) {
-        //     return;
-        // }
-        //
-        // var screening_request = {
-        //     tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore.tickerString)
-        // };
-        // var screener_arr = [];
-        // if (this.props.macdStore.isEnabled) {
-        //     screener_arr = screener_arr.concat(RequestBuilder.buildMacdRequest(this.props.macdStore))
-        // }
-        // if (this.props.stochasticStore.isEnabled) {
-        //     screener_arr = screener_arr.concat(RequestBuilder.buildStochasticRequest(this.props.stochasticStore))
-        // }
-        // screening_request['screener_arr'] = screener_arr;
-        //
-        // logger.log('completed request is ', screening_request);
-        // console.log('completed request is ', JSON.stringify(screening_request));
-        // this.setState(this.createStatesBySubmittingStatus(true), () =>
-        // {
-        //     request.post('http://127.0.0.1:8070/screen')
-        //         .withCredentials()
-        //         .send(screening_request)
-        //         .end(this.handleResponse);
-        // });
+        // show error if needed
+        var isAllRequiredFormValid = this.validateActiveTabs();
+
+        if (!isAllRequiredFormValid) {
+            return;
+        }
+
+        var screening_request = {
+            tickers_arr: RequestBuilder.buildTickerRequest(this.props.tickerStore.tickerString)
+        };
+        var screener_arr = [];
+        if (this.props.macdStore.isEnabled) {
+            screener_arr = screener_arr.concat(RequestBuilder.buildMacdRequest(this.props.macdStore))
+        }
+        if (this.props.stochasticStore.isEnabled) {
+            screener_arr = screener_arr.concat(RequestBuilder.buildStochasticRequest(this.props.stochasticStore))
+        }
+        screening_request['screener_arr'] = screener_arr;
+
+        logger.log('completed request is ', screening_request);
+        console.log('completed request is ', JSON.stringify(screening_request));
+        this.setState(this.createStatesBySubmittingStatus(true), () =>
+        {
+            request.post('http://127.0.0.1:8070/screen')
+                .withCredentials()
+                .send(screening_request)
+                .end(this.handleResponse);
+        });
     }
 
+    /**
+     * changes state flag of app to determing whether app should
+     * display 'Submit' or 'Submitting'
+     * @param status true/false
+     * @returns {state:value}
+     */
     createStatesBySubmittingStatus(status) {
         //if form is submitting
         if (status) {
@@ -199,11 +210,24 @@ class App extends Component {
     }
 
     handleResponse(error, response) {
+        if (error != null) {
+            this.setState({responseError: true});
+            this.setState(this.createStatesBySubmittingStatus(false));
+            logger.log('server response with error ', error);
+            return
+        }
+
+        this.setState({responseError: false});
+
         console.log('server response: ', response);
         this.setState({screenedResponse: response['text']});
         var responseJson = JSON.parse(response['text']);
         var passedResult = {};
         var failedResult = {};
+
+        /**
+         * put the tickers that passed screening first
+         */
         Object.keys(responseJson).map((tickerKey) => {
             if (tickerKey in responseJson &&
                 ResponseUtil.isAllResultsPassed(responseJson[tickerKey])) {
@@ -220,6 +244,11 @@ class App extends Component {
         }, this.createStatesBySubmittingStatus(false)));
     }
 
+    /**
+     * make sure all the enabled forms are valid
+     * ignores disable forms because user does not desire to use that screener
+     * @returns {boolean}
+     */
     validateActiveTabs() {
         var newMacdValidationErrors = {validationErrors:
             run(this.props.macdStore, this.props.macdStore.fieldValidations),

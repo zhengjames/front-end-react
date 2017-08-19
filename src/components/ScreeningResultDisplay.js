@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import { Button, Table } from 'react-bootstrap'
 import ResponseUtil from "../util/ResponseUtil";
 
-class ResultDisplay extends React.Component {
+class ScreeningResultDisplay extends React.Component {
     constructor(props) {
         super(props);
         //green backgound
@@ -22,16 +22,16 @@ class ResultDisplay extends React.Component {
                 <tr>
                     <th>#</th>
                     <th>Ticker</th>
-                    <th>Screening result</th>
+                    <th>ALL SCREENERS</th>
                     {this.props.shouldDisplayMacd ?
-                        <th>Macd result</th> : null}
+                        <th>MACD</th> : null}
                     {this.props.shouldDisplayStochastic ?
-                        <th>Stochastic result</th> : null}
+                        <th>STOCHASTIC</th> : null}
                 </tr>
                 </thead>
                 <tbody>
-                {this.displayTableRows(this.props.failedScreeningResults)}
                 {this.displayTableRows(this.props.passedScreeningResults)}
+                {this.displayTableRows(this.props.failedScreeningResults)}
                 </tbody>
             </Table> : null;
     }
@@ -61,8 +61,8 @@ class ResultDisplay extends React.Component {
     }
 }
 
-ResultDisplay.propTypes = {
+ScreeningResultDisplay.propTypes = {
     shouldDisplay: PropTypes.bool.isRequired
 };
 
-export default ResultDisplay;
+export default ScreeningResultDisplay;
