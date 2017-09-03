@@ -85,7 +85,7 @@ class StochasticFormContainer extends ScreenerFormContainer {
 	render() {
 		return (
 			<form className={this.state.formContainerClassName} onSubmit={this.handleFormSubmit}>
-				<h5 className="screener_header">Stochastic prediction screener</h5>
+				<div className="screener_header">Stochastic prediction screener</div>
 				<ScreenerToggle
 					label="Screener"
 					controlFunc={this.handleIsEnabledToggle}

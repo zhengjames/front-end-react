@@ -71,7 +71,6 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 	render() {
 		return (
 			<form className={this.state.formContainerClassName} onSubmit={this.handleFormSubmit}>
-				<h5>Please enter stock tickers in comma separated format</h5>
 				<TextArea
 					inputType={'text'}
 					title={'Please enter stock tickers in comma separated format'}
@@ -79,7 +78,7 @@ class StockTickersFormContainer extends ScreenerFormContainer {
 					resize={false}
 					name={'tickers'}
 					controlFunc={this.handleTextInput}
-					placeholder={'AMZ, APPl, NVDA...'}
+					placeholder={'AMZN, APPl, NVDA...'}
 					content={this.props.tickerString}
 				/>
 				<OptionallyDisplayed display={this.props.showErrors && !this.props.isValid}>

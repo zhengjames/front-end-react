@@ -71,7 +71,6 @@ class App extends Component {
         return (
             <BrowserRouter>
             <div className={this.state.formClassName}>
-                <h1>Predictitive Screening</h1>
                 {this.state.responseError ? <p>Error please try again</p> : null }
 
                 <Tabs>

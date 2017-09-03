@@ -68,7 +68,7 @@ class MacdFormContainer extends ScreenerFormContainer {
 	render() {
 		return (
 			<form className={this.state.formContainerClassName} onSubmit={this.handleFormSubmit}>
-				<h5 className='screener_header'>MACD prediction screener</h5>
+				<div className='screener_header'>MACD prediction screener</div>
 
 				<ScreenerToggle
 					label='Screener'
