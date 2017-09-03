@@ -20,9 +20,10 @@ import ScreeningResultDisplay from "./components/ScreeningResultDisplay";
 import {BrowserRouter, NavLink, Router, Route} from 'react-router-dom'
 import TradingviewChart from './components/TradingviewChart'
 
-require('./resource/css/styles.css');
 require('./resource/css/animations.css');
 require('./resource/css/spectre.min.css');
+require('./resource/css/styles.css');
+
 
 class App extends Component {
 

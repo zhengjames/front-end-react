@@ -2,6 +2,10 @@ body {
     padding-bottom: 80px;
 }
 
+html {
+    font-size: 15px;
+}
+
 input[type=checkbox],
 input[type=radio] {
     margin-right: 8px;
