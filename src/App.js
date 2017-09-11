@@ -182,7 +182,6 @@ class App extends Component {
         this.setState(this.createStatesBySubmittingStatus(true), () =>
         {
             request.post('http://127.0.0.1:8070/screen')
-                .withCredentials()
                 .send(screening_request)
                 .end(this.handleResponse);
         });
